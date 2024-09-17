@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 16:39:28 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/17 15:58:50 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/17 17:39:15 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@ void ft_free(t_philo *philo)
 
 int write_error(char *str)
 {
-    printf("%s\n", str);
+    printf(RED"%s\n"NC, str);
     return (1); 
 }
 
-int    check_info(t_philo **philo)
+int    check_values(t_philo **philo)
 {
-    if ((*philo)->data->num_of_philo > 200 || (*philo)->data->num_of_philo <= 0 || (*philo)->data->t_to_die < 60 || 
-		(*philo)->data->t_to_eat < 60 || (*philo)->data->t_to_sleep < 60 || (*philo)->data->num_of_times_to_eat == 0)
+    if ((*philo)->info->num_of_philo > 200 || (*philo)->info->num_of_philo <= 0 || (*philo)->info->t_to_die < 60 || 
+		(*philo)->info->t_to_eat < 60 || (*philo)->info->t_to_sleep < 60 || (*philo)->info->num_of_eat == 0)
         return (0);
     else
         return (1);
@@ -36,12 +36,12 @@ int init_philo(t_philo *philo, char **av)
 {
     int res;
 
-    philo->data->t_start = gettime();
-    philo->data->num_of_philo = atoi(av[1]);
-    philo->data->t_to_die =  atoi(av[2]);
-    philo->data->t_to_eat = atoi(av[3]);
-    philo->data->t_to_sleep = atoi(av[4]);
-    res = check_info(&philo);    
+    philo->info->t_start = gettime();
+    philo->info->num_of_philo = atoi(av[1]);
+    philo->info->t_to_die =  atoi(av[2]);
+    philo->info->t_to_eat = atoi(av[3]);
+    philo->info->t_to_sleep = atoi(av[4]);
+    res = check_values(&philo);    
     if(res == 0)
         return (0);
     else
@@ -51,7 +51,7 @@ int init_philo(t_philo *philo, char **av)
 int Is_success(char *str)
 {
     int i;
-    int len;
+    size_t len;
     
     len = ft_strlen(str);
     while(str[i] && (str[i] == '0' || str[i] == '+'))
@@ -65,7 +65,7 @@ int Is_success(char *str)
         return (1);
     else if(len == 10)
     {
-        if(ft_strncmp(str, "2147483647", 10) >= 0)
+        if(ft_strncmp(str, "2147483647", 10) > 0)
             return (0);
         else
             return (1);
@@ -84,6 +84,7 @@ int valide_args(t_philo *philo, int ac, char **av)
             return (0);
         i++;
     }
+    return (1);
 }
 
 int        check_args(t_philo *philo, int ac, char **av)
@@ -93,9 +94,9 @@ int        check_args(t_philo *philo, int ac, char **av)
     if(ac == 5 || ac == 6)
     {
         if(ac == 6)
-            philo->data->arg_last = 1;
+            philo->info->arg_last = 1;
         else
-            philo->data->arg_last = 0;
+            philo->info->arg_last = 0;
         if(valide_args(philo, ac, av) == 0)
             return (0);
         res = (int)init_philo(philo, av);
@@ -105,6 +106,11 @@ int        check_args(t_philo *philo, int ac, char **av)
             return (1);
     }
     return (0);
+}
+
+void    allocate_memory(t_philo *philo)
+{
+    
 }
 
 int main(int ac, char **av)
@@ -121,6 +127,10 @@ int main(int ac, char **av)
         {
             write_error("Wrong arguments");
             return (0);
+        }
+        else
+        {
+            allocate_memory(&philo);
         }
     }
     ft_free(&philo);
