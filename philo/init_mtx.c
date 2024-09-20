@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 17:58:04 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/19 20:04:21 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/20 18:18:43 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,27 +24,17 @@ int     Is_dead(t_philo *philo)
 {
     if(philo == NULL)
         return (1);
-    pthread_mutex_lock(&philo->info->t_lock);
-}
-
-int      init_several_mtx(t_philo *philo)
-{
-    int i;
-
-    i = 0;
-    pthread_mutex_init(&philo->info->p_lock, NULL);
-    pthread_mutex_init(&philo->info->t_check, NULL);
-    pthread_mutex_init(&philo->info->t_success, NULL);
-    while(i < philo->info->num_of_philo)
+    pthread_mutex_lock(&philo->info->t_check);
+    if(philo->info->dead_philo == -1)
     {
-        pthread_mutex_init(&philo->info->forks[i], NULL);
-        i++;
+        pthread_mutex_unlock(&philo->info->t_check);
+        return (-1);
     }
-    printf(BLUE"i = %d .  philo->info->num_of_philo = %d\n"NC, i, philo->info->num_of_philo);
-    if(i != philo->info->num_of_philo)
-        return (0);
     else
+    {   
+        pthread_mutex_unlock(&philo->info->t_check);
         return (1);
+    }
 }
 
 void *routine_one_thread(void *arg)
@@ -80,12 +70,8 @@ int     check_threads(t_philo *philo)
     }
     else
     {
-        printf(RED"doesn't arrive here why ?\n"NC);
-        pthread_create(&philo->info->threads[0], NULL, &routine_one_thread, (void *)philo);
-        pthread_create(&philo->info->threads[1], NULL, &routine_one_thread, (void *)philo);
-        pthread_join(philo->info->threads[0], NULL);
-        pthread_join(philo->info->threads[1], NULL);
-        return (1);
+       if(Multi_Threads(&philo) == 1)
+            return (1);
     }
     return (0);
 }

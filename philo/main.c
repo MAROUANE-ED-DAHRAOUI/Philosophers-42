@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 16:39:28 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/19 19:07:53 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/20 16:46:08 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,7 @@ int main(int ac, char **av)
 
     res = 0;
     philo.info = NULL;
-    philo.info->dead_philo = 1;
+    philo.info->dead_philo = -1;
     if (ac != 5 && ac != 6)
         return (write_error("Wrong amount of arguments"));
     else

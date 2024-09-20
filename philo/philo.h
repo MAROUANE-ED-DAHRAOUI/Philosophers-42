@@ -1,10 +1,10 @@
 #ifndef PHILO_H
 #define PHILO_H
 
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <pthread.h>
 #include <sys/time.h>
 
 
@@ -46,16 +46,19 @@ int         ft_strncmp(const char *s1, const char *s2, size_t n);
 size_t      ft_strlen(const char *s);
 int         ft_atoi(const char *str);
 int         write_error(char *str);
-long        get_time_current_ms(void);
 int         check_args(t_philo *philo, int ac, char **av);
 int         init_philo(t_philo *philo, char **av);
+long        get_current_time_ms(void);
 int         check_values(t_philo **philo, char **av);
 int         check_threads(t_philo *philo);
 int         init_several_mtx(t_philo *philo);
 int         allocate_memory(t_philo *philo);
 int         valide_args(int ac, char **av);
-int         init_several_mtx(t_philo *philo);
 int         Is_success(char *str);
 void        ft_free(t_philo *philo);
+int         Is_dead(t_philo *philo);
+void        *routine_one_thread(void *arg);
+int         check_threads(t_philo *philo);
+int         Multi_Threads(t_philo **philos);
 
 #endif
