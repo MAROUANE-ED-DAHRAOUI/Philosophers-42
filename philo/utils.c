@@ -1,15 +1,5 @@
 #include "philo.h"
 
-long    gettime(void)
-{
-    struct timeval  tv;
-    long            time;
-
-    gettimeofday(&tv, NULL);
-    time = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-    return (time);
-}
-
 int ft_strncmp(const char *s1, const char *s2, size_t n)
 {
 	size_t	i;
@@ -34,4 +24,29 @@ size_t	ft_strlen(const char *s)
     while (s[i])
         i++;
     return (i);
+}
+
+int		ft_atoi(const char *str)
+{
+	int	i;
+	int	nega;
+	int	rlt;
+
+	i = 0;
+	nega = 1;
+	rlt = 0;
+	while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
+		i++;
+	if (str[i] == '+' || str[i] == '-')
+	{
+		if (str[i] == '-')
+			nega = -nega;
+		i++;
+	}
+	while (str[i] >= 48 && str[i] <= 57)
+	{
+		rlt = rlt * 10 + (str[i] - 48);
+		i++;
+	}
+	return (rlt * nega);
 }

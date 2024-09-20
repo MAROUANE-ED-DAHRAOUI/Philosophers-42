@@ -7,8 +7,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 
-// Declare the gettime function prototype
-long gettime(void);
+
 typedef struct s_info t_info;
 
 // Define color codes
@@ -35,7 +34,7 @@ typedef struct s_info{
     int             t_to_eat;
     int             t_to_sleep;
     int             num_of_eat;
-    int             t_dead;
+    int             dead_philo;
     int             arg_last;
     pthread_mutex_t *forks;
     pthread_mutex_t p_lock;
@@ -45,9 +44,18 @@ typedef struct s_info{
 
 int         ft_strncmp(const char *s1, const char *s2, size_t n);
 size_t      ft_strlen(const char *s);
-int         write_error(char *str); 
+int         ft_atoi(const char *str);
+int         write_error(char *str);
+long        get_time_current_ms(void);
 int         check_args(t_philo *philo, int ac, char **av);
 int         init_philo(t_philo *philo, char **av);
-int         check_values(t_philo **philo);
+int         check_values(t_philo **philo, char **av);
+int         check_threads(t_philo *philo);
+int         init_several_mtx(t_philo *philo);
+int         allocate_memory(t_philo *philo);
+int         valide_args(int ac, char **av);
+int         init_several_mtx(t_philo *philo);
+int         Is_success(char *str);
+void        ft_free(t_philo *philo);
 
 #endif

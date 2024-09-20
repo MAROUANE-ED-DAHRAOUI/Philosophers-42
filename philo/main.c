@@ -6,15 +6,36 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 16:39:28 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/17 17:39:15 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/19 19:07:53 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+int check_threads(t_philo *philo);
+
 void ft_free(t_philo *philo)
-{   
-    free(philo);
+{
+    if(philo->info->threads)
+    {
+        free(philo->info->threads);
+        philo->info->threads = NULL;
+    }
+    if(philo->info->forks)
+    {
+        free(philo->info->forks);
+        philo->info->forks = NULL;
+    }
+    if(philo->info)
+    {
+        free(philo->info);
+        philo->info = NULL;
+    }
+    if(philo)
+    {
+        free(philo);
+        philo = NULL;
+    }
 }
 
 int write_error(char *str)
@@ -23,11 +44,18 @@ int write_error(char *str)
     return (1); 
 }
 
-int    check_values(t_philo **philo)
+int    check_values(t_philo **philo, char **av)
 {
+    if((*philo)->info->arg_last == 1)
+        (*philo)->info->num_of_eat = atoi(av[5]);
+    else
+        (*philo)->info->num_of_eat = -1;
+
     if ((*philo)->info->num_of_philo > 200 || (*philo)->info->num_of_philo <= 0 || (*philo)->info->t_to_die < 60 || 
 		(*philo)->info->t_to_eat < 60 || (*philo)->info->t_to_sleep < 60 || (*philo)->info->num_of_eat == 0)
-        return (0);
+        {
+            return (0);
+        }
     else
         return (1);
 }
@@ -36,12 +64,12 @@ int init_philo(t_philo *philo, char **av)
 {
     int res;
 
-    philo->info->t_start = gettime();
-    philo->info->num_of_philo = atoi(av[1]);
-    philo->info->t_to_die =  atoi(av[2]);
-    philo->info->t_to_eat = atoi(av[3]);
-    philo->info->t_to_sleep = atoi(av[4]);
-    res = check_values(&philo);    
+    philo->info->t_start = get_time_current_ms();
+    philo->info->num_of_philo = ft_atoi(av[1]);
+    philo->info->t_to_die =  ft_atoi(av[2]);
+    philo->info->t_to_eat = ft_atoi(av[3]);
+    philo->info->t_to_sleep = ft_atoi(av[4]);
+    res = check_values(&philo, av);    
     if(res == 0)
         return (0);
     else
@@ -53,6 +81,7 @@ int Is_success(char *str)
     int i;
     size_t len;
     
+    i = 0;
     len = ft_strlen(str);
     while(str[i] && (str[i] == '0' || str[i] == '+'))
     {
@@ -73,12 +102,12 @@ int Is_success(char *str)
     return (1);
 }
 
-int valide_args(t_philo *philo, int ac, char **av)
+int valide_args(int ac, char **av)
 {
     int i;
     
-    i = 0;
-    while(++i < ac)
+    i = 1;
+    while(i < ac)
     {
         if (Is_success(av[i]) == 0)
             return (0);
@@ -97,20 +126,38 @@ int        check_args(t_philo *philo, int ac, char **av)
             philo->info->arg_last = 1;
         else
             philo->info->arg_last = 0;
-        if(valide_args(philo, ac, av) == 0)
+
+        if(valide_args(ac, av) == 0)
             return (0);
-        res = (int)init_philo(philo, av);
-        if(res == 0)
-            return (0);
-        else  
-            return (1);
+        else
+        {
+            res = (int)init_philo(philo, av);
+            if(res == 0)
+                return (0);
+            else  
+                return (1);
+        }
     }
     return (0);
 }
 
-void    allocate_memory(t_philo *philo)
+int    allocate_memory(t_philo *philo)
 {
-    
+    int success;
+
+    philo->info->threads = malloc(philo->info->num_of_philo * sizeof(pthread_t));
+    philo->info->forks = malloc(philo->info->num_of_philo * sizeof(pthread_mutex_t));
+    if(philo->info->threads == NULL || philo->info->forks == NULL)
+        return 0;
+
+    success = init_several_mtx(philo);
+    if(success == 0)
+    {
+        write_error("Mutex initialization failed");
+        ft_free(philo);
+        return 0;
+    }
+    return (1);
 }
 
 int main(int ac, char **av)
@@ -118,21 +165,42 @@ int main(int ac, char **av)
     t_philo philo;
     int res;
 
+    res = 0;
+    philo.info = NULL;
+    philo.info->dead_philo = 1;
     if (ac != 5 && ac != 6)
-            return (write_error("Wrong amount of arguments"));
+        return (write_error("Wrong amount of arguments"));
     else
     {
+        philo.info = malloc(sizeof(t_info));
+        if (philo.info == NULL)
+        {
+            write_error("Memory allocation failed");
+            ft_free(&philo);
+            return (0);
+        }
         res = check_args(&philo, ac, av);
         if (res == 0)
         {
             write_error("Wrong arguments");
+            ft_free(&philo);
             return (0);
         }
         else
         {
-            allocate_memory(&philo);
+           if (allocate_memory(&philo) == 0)
+            {
+                write_error("Memory allocation failed");
+                return (0);
+            }
+        }
+       if(check_threads(&philo) == 0)
+        {
+            write_error("Thread creation failed");
+            ft_free(&philo);
+            return (0);
         }
     }
-    ft_free(&philo);
+    // ft_free(&philo);
     return (0);
 }
