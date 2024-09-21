@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 17:58:04 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/20 18:18:43 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/20 22:40:41 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,27 @@ long    get_current_time_ms(void)
 
     gettimeofday(&tm, NULL);
     return (tm.tv_sec * 1000 + tm.tv_usec / 1000);
+}
+
+
+int      init_several_mtx(t_philo *philo)
+{
+    int i;
+
+    i = 0;
+    pthread_mutex_init(&philo->info->p_lock, NULL);
+    pthread_mutex_init(&philo->info->t_check, NULL);
+    pthread_mutex_init(&philo->info->t_success, NULL);
+    while(i < philo->info->num_of_philo)
+    {
+        pthread_mutex_init(&philo->info->forks[i], NULL);
+        i++;
+    }
+    printf(BLUE"i = %d .  philo->info->num_of_philo = %d\n"NC, i, philo->info->num_of_philo);
+    if(i != philo->info->num_of_philo)
+        return (0);
+    else
+        return (1);
 }
 
 int     Is_dead(t_philo *philo)
