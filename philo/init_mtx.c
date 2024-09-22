@@ -6,13 +6,16 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 17:58:04 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/20 22:40:41 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/22 06:00:21 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-long    get_current_time_ms(void)
+/* ---->  Function to get the current time in milliseconds. 
+        This is used for time tracking in the simulation.
+*/
+long get_current_time_ms(void)
 {
     struct timeval  tm;
 
@@ -20,8 +23,12 @@ long    get_current_time_ms(void)
     return (tm.tv_sec * 1000 + tm.tv_usec / 1000);
 }
 
-
-int      init_several_mtx(t_philo *philo)
+/*
+------> Function to initialize several mutexes,
+        one for each philosopher fork and other shared
+        resources like `p_lock`, `t_check`, and `t_success`.
+*/
+int init_several_mtx(t_philo *philo)
 {
     int i;
 
@@ -41,7 +48,11 @@ int      init_several_mtx(t_philo *philo)
         return (1);
 }
 
-int     Is_dead(t_philo *philo)
+/*
+ -----> Function to check if a philosopher is dead by
+        inspecting the shared `dead_philo` variable with proper mutex locking.
+*/
+int Is_dead(t_philo *philo)
 {
     if(philo == NULL)
         return (1);
@@ -58,6 +69,11 @@ int     Is_dead(t_philo *philo)
     }
 }
 
+/*
+------> Routine function for the philosopher when there
+        is only one philosopher (thread).
+        Handles the philosopher's actions and checks for death.
+*/ 
 void *routine_one_thread(void *arg)
 {
     t_philo     *philo;
@@ -66,22 +82,28 @@ void *routine_one_thread(void *arg)
 
     time = get_current_time_ms();
     philo = (t_philo *)arg;
-    pthread_mutex_lock(&philo->info->forks[0]);
+    pthread_mutex_lock(&philo->info->forks[0]);  // Philosopher picks up the only fork available.
     printf(BLUE"%ld 1 taken a fork\n"NC, time - philo->info->t_start);
-    pthread_mutex_unlock(&philo->info->forks[0]);
+    pthread_mutex_unlock(&philo->info->forks[0]); // Immediately releases the fork.(KAYHTHA)
+    
     t_begin = get_current_time_ms();
     if(Is_dead(philo) == 1)
     {
         while(get_current_time_ms() - t_begin < philo->info->t_to_die)
         {
-            usleep(500);
+            usleep(500); // Philosopher waits for the time to die to pass.
         }
     }
     printf(RED"%ld 1 is dead\n"NC, get_current_time_ms() - philo->info->t_start);
     return (NULL);
 }
 
-int     check_threads(t_philo *philo)
+/*
+------>Function to check and handle philosopher threads.
+        If there is only one philosopher, it runs a single thread;
+        otherwise, it creates multiple threads.
+*/
+int check_threads(t_philo *philo)
 {
     if(philo->info->num_of_philo == 1)
     {

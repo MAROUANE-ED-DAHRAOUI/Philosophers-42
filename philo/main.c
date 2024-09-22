@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/13 16:39:28 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/20 16:46:08 by med-dahr         ###   ########.fr       */
+/*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
+/*   Updated: 2024/09/22 06:08:05 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 int check_threads(t_philo *philo);
 
+// Function to free all allocated memory for the philosopher simulation (threads, forks, and other info structures).
 void ft_free(t_philo *philo)
 {
     if(philo->info->threads)
@@ -38,28 +39,32 @@ void ft_free(t_philo *philo)
     }
 }
 
+// Function to print an error message to the console and return an error code (1).
 int write_error(char *str)
 {
     printf(RED"%s\n"NC, str);
     return (1); 
 }
 
-int    check_values(t_philo **philo, char **av)
+// Function to validate the philosopher's input values and return 0 or 1 depending on their validity.
+int check_values(t_philo **philo, char **av)
 {
     if((*philo)->info->arg_last == 1)
         (*philo)->info->num_of_eat = atoi(av[5]);
     else
         (*philo)->info->num_of_eat = -1;
 
-    if ((*philo)->info->num_of_philo > 200 || (*philo)->info->num_of_philo <= 0 || (*philo)->info->t_to_die < 60 || 
-		(*philo)->info->t_to_eat < 60 || (*philo)->info->t_to_sleep < 60 || (*philo)->info->num_of_eat == 0)
-        {
-            return (0);
-        }
+    if ((*philo)->info->num_of_philo > 200 || (*philo)->info->num_of_philo <= 0 || 
+        (*philo)->info->t_to_die < 60 || (*philo)->info->t_to_eat < 60 || 
+        (*philo)->info->t_to_sleep < 60 || (*philo)->info->num_of_eat == 0)
+    {
+        return (0);
+    }
     else
         return (1);
 }
 
+// Function to initialize philosopher information, including start time and various simulation parameters.
 int init_philo(t_philo *philo, char **av)
 {
     int res;
@@ -76,6 +81,7 @@ int init_philo(t_philo *philo, char **av)
         return (1);
 }
 
+// Function to check if an argument string is a valid integer (within bounds of int).
 int Is_success(char *str)
 {
     int i;
@@ -102,6 +108,7 @@ int Is_success(char *str)
     return (1);
 }
 
+// Function to validate all command line arguments passed to the program.
 int valide_args(int ac, char **av)
 {
     int i;
@@ -116,7 +123,8 @@ int valide_args(int ac, char **av)
     return (1);
 }
 
-int        check_args(t_philo *philo, int ac, char **av)
+// Function to check command-line arguments and initialize philosopher data based on those arguments.
+int check_args(t_philo *philo, int ac, char **av)
 {
     int res;
 
@@ -141,7 +149,8 @@ int        check_args(t_philo *philo, int ac, char **av)
     return (0);
 }
 
-int    allocate_memory(t_philo *philo)
+// Function to allocate memory for philosopher threads and forks. Also initializes mutexes.
+int allocate_memory(t_philo *philo)
 {
     int success;
 
@@ -160,6 +169,7 @@ int    allocate_memory(t_philo *philo)
     return (1);
 }
 
+// Main function: Entry point of the philosopher simulation. Manages argument checking, memory allocation, and thread creation.
 int main(int ac, char **av)
 {
     t_philo philo;
