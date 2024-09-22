@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/22 06:08:05 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/22 12:38:42 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,8 @@ int init_philo(t_philo *philo, char **av)
 {
     int res;
 
-    philo->info->t_start = get_time_current_ms();
+    philo->info->dead_philo = 0;
+    philo->info->t_start = get_current_time_ms();
     philo->info->num_of_philo = ft_atoi(av[1]);
     philo->info->t_to_die =  ft_atoi(av[2]);
     philo->info->t_to_eat = ft_atoi(av[3]);
@@ -174,10 +175,11 @@ int main(int ac, char **av)
 {
     t_philo philo;
     int res;
+    int i;
 
     res = 0;
+    i = 0;
     philo.info = NULL;
-    philo.info->dead_philo = -1;
     if (ac != 5 && ac != 6)
         return (write_error("Wrong amount of arguments"));
     else
@@ -210,6 +212,14 @@ int main(int ac, char **av)
             ft_free(&philo);
             return (0);
         }
+    }
+    pthread_mutex_destroy(&philo.info->p_lock);
+    pthread_mutex_destroy(&philo.info->t_check);
+    pthread_mutex_destroy(&philo.info->t_success);
+    while(i < philo.info->num_of_philo)
+    {
+        pthread_mutex_destroy(&philo.info->forks[i]);
+        i++;
     }
     // ft_free(&philo);
     return (0);
