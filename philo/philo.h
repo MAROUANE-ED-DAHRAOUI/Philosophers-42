@@ -40,6 +40,7 @@ typedef struct s_info{
     pthread_mutex_t p_lock;
     pthread_mutex_t t_check;
     pthread_mutex_t t_success;
+    t_philo         *philos;
 }   t_info;
 
 int         ft_strncmp(const char *s1, const char *s2, size_t n);
@@ -55,13 +56,13 @@ int         init_several_mtx(t_philo *philo);
 int         allocate_memory(t_philo *philo);
 int         valide_args(int ac, char **av);
 int         Is_success(char *str);
-void        ft_free(t_philo *philo);
+void        ft_free(t_philo **philo);
 int         Is_dead(t_philo *philo);
 void        *routine_one_thread(void *arg);
 int         check_threads(t_philo *philo);
-int         Multi_Threads(t_philo **philos);
-int         ft_joining_threads(pthread_t *threads, int num_of_philo);
-int         Check_Philos_State(t_philo **Philos);
+int         Multi_Threads(t_philo *philos);
+int         ft_joining_threads(pthread_t *philos, int num_of_philo);
+int         Check_Philos_State(t_philo *Philos);
 int         thread_safe_print(char *str, t_philo *philo);
 int         check_take_forks(t_philo *philo);
 int         philos_alternates(t_philo *philo);

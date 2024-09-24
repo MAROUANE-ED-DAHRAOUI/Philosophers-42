@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/22 12:38:42 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/24 12:34:17 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,28 +15,13 @@
 int check_threads(t_philo *philo);
 
 // Function to free all allocated memory for the philosopher simulation (threads, forks, and other info structures).
-void ft_free(t_philo *philo)
+void ft_free(t_philo **philo)
 {
-    if(philo->info->threads)
-    {
-        free(philo->info->threads);
-        philo->info->threads = NULL;
-    }
-    if(philo->info->forks)
-    {
-        free(philo->info->forks);
-        philo->info->forks = NULL;
-    }
-    if(philo->info)
-    {
-        free(philo->info);
-        philo->info = NULL;
-    }
-    if(philo)
-    {
-        free(philo);
-        philo = NULL;
-    }
+    free((*philo));
+    free((*philo)->info->threads);
+    free((*philo)->info->forks);
+    free((*philo)->info);
+    free((*philo)->info->philos);
 }
 
 // Function to print an error message to the console and return an error code (1).
@@ -50,13 +35,13 @@ int write_error(char *str)
 int check_values(t_philo **philo, char **av)
 {
     if((*philo)->info->arg_last == 1)
-        (*philo)->info->num_of_eat = atoi(av[5]);
+        (*philo)->info->num_of_eat = ft_atoi(av[5]);
     else
-        (*philo)->info->num_of_eat = -1;
+        (*philo)->info->num_of_eat = 0;
 
     if ((*philo)->info->num_of_philo > 200 || (*philo)->info->num_of_philo <= 0 || 
         (*philo)->info->t_to_die < 60 || (*philo)->info->t_to_eat < 60 || 
-        (*philo)->info->t_to_sleep < 60 || (*philo)->info->num_of_eat == 0)
+        (*philo)->info->t_to_sleep < 60)
     {
         return (0);
     }
@@ -75,9 +60,14 @@ int init_philo(t_philo *philo, char **av)
     philo->info->t_to_die =  ft_atoi(av[2]);
     philo->info->t_to_eat = ft_atoi(av[3]);
     philo->info->t_to_sleep = ft_atoi(av[4]);
-    res = check_values(&philo, av);    
+    philo->info->num_of_eat = 0;
+    // printf(BLUE"Number of philosophers = %d\n"NC, philo->info->num_of_philo);
+    res = check_values(&philo, av);
     if(res == 0)
+    {
+        printf(BLUE"Arguments are valid\n"NC);
         return (0);
+    }
     else
         return (1);
 }
@@ -154,17 +144,23 @@ int check_args(t_philo *philo, int ac, char **av)
 int allocate_memory(t_philo *philo)
 {
     int success;
+    t_philo *philos;
 
-    philo->info->threads = malloc(philo->info->num_of_philo * sizeof(pthread_t));
+    // philo->info->threads = malloc(philo->info->num_of_philo * sizeof(pthread_t));
     philo->info->forks = malloc(philo->info->num_of_philo * sizeof(pthread_mutex_t));
     if(philo->info->threads == NULL || philo->info->forks == NULL)
         return 0;
 
+    philos = malloc(philo->info->num_of_philo * sizeof(t_philo));
+    if (philos == NULL) {
+        fprintf(stderr, "Memory allocation failed for philos\n");
+        return 1;
+    }
     success = init_several_mtx(philo);
     if(success == 0)
     {
         write_error("Mutex initialization failed");
-        ft_free(philo);
+        ft_free(&philo);
         return 0;
     }
     return (1);
@@ -188,14 +184,14 @@ int main(int ac, char **av)
         if (philo.info == NULL)
         {
             write_error("Memory allocation failed");
-            ft_free(&philo);
+            free(philo.info);
             return (0);
         }
         res = check_args(&philo, ac, av);
         if (res == 0)
         {
             write_error("Wrong arguments");
-            ft_free(&philo);
+            free(philo.info);
             return (0);
         }
         else
@@ -209,8 +205,15 @@ int main(int ac, char **av)
        if(check_threads(&philo) == 0)
         {
             write_error("Thread creation failed");
-            ft_free(&philo);
+            free(philo.info);
             return (0);
+        }
+        else
+        {
+            if(Multi_Threads(&philo) == 1)
+            {
+                return 1;
+            }
         }
     }
     pthread_mutex_destroy(&philo.info->p_lock);
@@ -221,6 +224,5 @@ int main(int ac, char **av)
         pthread_mutex_destroy(&philo.info->forks[i]);
         i++;
     }
-    // ft_free(&philo);
     return (0);
 }

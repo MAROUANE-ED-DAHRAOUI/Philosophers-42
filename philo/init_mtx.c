@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 17:58:04 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/22 14:46:02 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/24 10:26:40 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,7 @@ int check_threads(t_philo *philo)
     }
     else
     {
-       if(Multi_Threads(&philo) == 1)
-            return (1);
+        return (1);
     }
     return (0);
 }
