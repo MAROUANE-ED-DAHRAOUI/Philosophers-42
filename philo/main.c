@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/24 12:34:17 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/25 17:46:44 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int Is_success(char *str)
     }
     if(len > 10)
         return (0);
-    else if(len < 10)
+    else if(len < 10 && len > 0)
         return (1);
     else if(len == 10)
     {
@@ -144,18 +144,12 @@ int check_args(t_philo *philo, int ac, char **av)
 int allocate_memory(t_philo *philo)
 {
     int success;
-    t_philo *philos;
 
-    // philo->info->threads = malloc(philo->info->num_of_philo * sizeof(pthread_t));
     philo->info->forks = malloc(philo->info->num_of_philo * sizeof(pthread_mutex_t));
+    philo->info->threads = malloc(philo->info->num_of_philo * sizeof(pthread_t));
     if(philo->info->threads == NULL || philo->info->forks == NULL)
         return 0;
 
-    philos = malloc(philo->info->num_of_philo * sizeof(t_philo));
-    if (philos == NULL) {
-        fprintf(stderr, "Memory allocation failed for philos\n");
-        return 1;
-    }
     success = init_several_mtx(philo);
     if(success == 0)
     {
@@ -201,6 +195,7 @@ int main(int ac, char **av)
                 write_error("Memory allocation failed");
                 return (0);
             }
+            printf(BLUE"Kolchi Mzn had sa3a\n"NC);
         }
        if(check_threads(&philo) == 0)
         {
