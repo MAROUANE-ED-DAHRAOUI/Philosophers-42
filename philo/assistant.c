@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/24 12:32:09 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/26 18:13:19 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,31 +119,29 @@ int ft_joining_threads(pthread_t *threads, int num_of_philo)
 
 // Function to check the state of all philosophers continuously in a loop.
 // It checks if any philosopher has died. If one has, it breaks the loop.
-int Check_Philos_State(t_philo *Philos)
+int Check_Philos_State(t_philo **Philos)
 {
     int i;
 
     i = 0;
     while (1)
     {
-        if(i == Philos->info->num_of_philo)
+        if(i == (*Philos)->info->num_of_philo)
             i = 0;  // Reset to first philosopher if we reach the last one.
 
-        if (Is_dead(&Philos[i]) == 0)  // Check if the philosopher is dead.
+        if (Is_dead(Philos[i]) == 0)  // Check if the philosopher is dead.
             break;  // If a philosopher is dead, break the loop.
 
         i++;
     }
     i = 0;
-    while(i < Philos->info->num_of_philo)
+    while(i < (*Philos)->info->num_of_philo)
     {
-        if (pthread_join(Philos[i].info->threads[0], NULL) == 0)
+        if (pthread_join((*Philos)[i].info->threads[0], NULL) == 0)
             return 0;  // If thread joining fails, return 0.
-        // if(ft_joining_threads(Philos->info->threads, Philos->info->num_of_philo, i) == 0)
-            // return 0;  // If thread joining fails, return 0.
         i++;
     }
-    return 1;  // Otherwise, return 1.
+    return 1;
 }
 
 // Function to create multiple threads, one for each philosopher.
@@ -151,16 +149,15 @@ int Check_Philos_State(t_philo *Philos)
 int     Multi_Threads(t_philo *philo)
 {
     int i;
+    t_philo *philos;
 
     i = 0;
-    // philos = (t_philo *)malloc(philos->info->num_of_philo * sizeof(t_philo));
-    t_philo *philos = malloc(philo->info->num_of_philo * sizeof(t_philo));
-    // philos->info = philo->info;
+    philos = malloc(philo->info->num_of_philo * sizeof(t_philo));
     if (philos == NULL) {
-        fprintf(stderr, "Memory allocation failed for philos\n");
+        write_error("Memory allocation failed for philosophers");
         return 1;
     }
-    while (i < philo->info->num_of_philo - 1)
+    while (i < philo->info->num_of_philo)
     {
         philos[i].info = philo->info;
         philos[i].id = i + 1;
@@ -180,10 +177,9 @@ int     Multi_Threads(t_philo *philo)
         pthread_create(philos[i].info->threads, NULL, &Routine_Multi_Threads, (void *)&(philos)[i]);
         i++;
     }
-    if(Check_Philos_State(philos) == 0)
+    if(Check_Philos_State(&philos) == 0)
     {
             write_error("Philosopher is dead");
-            // ft_free(&philo);
             return (0);
     }
     return 1;

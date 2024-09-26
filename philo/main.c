@@ -6,15 +6,16 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/25 17:46:44 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/26 23:42:31 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int check_threads(t_philo *philo);
-
-// Function to free all allocated memory for the philosopher simulation (threads, forks, and other info structures).
+/*
+ * Function to free all allocated memory for the philosopher simulation
+    (threads, forks, and other info structures).
+*/
 void ft_free(t_philo **philo)
 {
     free((*philo));
@@ -64,10 +65,7 @@ int init_philo(t_philo *philo, char **av)
     // printf(BLUE"Number of philosophers = %d\n"NC, philo->info->num_of_philo);
     res = check_values(&philo, av);
     if(res == 0)
-    {
-        printf(BLUE"Arguments are valid\n"NC);
         return (0);
-    }
     else
         return (1);
 }
@@ -149,7 +147,6 @@ int allocate_memory(t_philo *philo)
     philo->info->threads = malloc(philo->info->num_of_philo * sizeof(pthread_t));
     if(philo->info->threads == NULL || philo->info->forks == NULL)
         return 0;
-
     success = init_several_mtx(philo);
     if(success == 0)
     {
@@ -195,20 +192,13 @@ int main(int ac, char **av)
                 write_error("Memory allocation failed");
                 return (0);
             }
-            printf(BLUE"Kolchi Mzn had sa3a\n"NC);
         }
        if(check_threads(&philo) == 0)
         {
+            printf(RED"Ana hnaaaa\n"NC);
             write_error("Thread creation failed");
             free(philo.info);
             return (0);
-        }
-        else
-        {
-            if(Multi_Threads(&philo) == 1)
-            {
-                return 1;
-            }
         }
     }
     pthread_mutex_destroy(&philo.info->p_lock);
