@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/26 18:13:19 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/27 21:01:22 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,27 +94,13 @@ void *Routine_Multi_Threads(void *arg)
         }
     }
     if(philos_alternates(philo) == 0)
-        return NULL;
-    return NULL;
-}
-
-// Function to join all philosopher threads (waits for all threads to finish).
-// Iterates over all philosopher threads and joins them.
-int ft_joining_threads(pthread_t *threads, int num_of_philo)
-{
-    int i;
-
-    i = 0;
-    while (i < num_of_philo)
     {
-        if (pthread_join(threads[i], NULL) == 0){
-            return 0;  // If thread joining fails, return 0.
-        }
-        i++;
+        printf("Philosopher is hehhhhhreee\n");
+        return NULL;
     }
-    if(i == num_of_philo)
-        return 1;
-    return 0;
+    else{
+        return NULL;
+    }
 }
 
 // Function to check the state of all philosophers continuously in a loop.
@@ -129,58 +115,80 @@ int Check_Philos_State(t_philo **Philos)
         if(i == (*Philos)->info->num_of_philo)
             i = 0;  // Reset to first philosopher if we reach the last one.
 
-        if (Is_dead(Philos[i]) == 0)  // Check if the philosopher is dead.
-            break;  // If a philosopher is dead, break the loop.
-
+        if (Is_dead(Philos[i]) == 0)
+            break;
         i++;
     }
     i = 0;
     while(i < (*Philos)->info->num_of_philo)
     {
-        if (pthread_join((*Philos)[i].info->threads[0], NULL) == 0)
-            return 0;  // If thread joining fails, return 0.
+        if (pthread_join(*((*Philos)[i].info->threads), NULL) == 0)
+            {
+                printf(RED"Ana Hnaaanananaaanahanahanah\n"NC);
+                return 1;
+            }
         i++;
     }
-    return 1;
+    return 0;
+}
+
+void print_info(t_philo *philo)
+{
+    printf("Number of philosophers = %d\n", philo->info->num_of_philo);
+    printf("Time to die = %d\n", philo->info->t_to_die);
+    printf("Time to eat = %d\n", philo->info->t_to_eat);
+    printf("Time to sleep = %d\n", philo->info->t_to_sleep);
+    printf("Number of times each philosopher must eat = %d\n", philo->info->num_of_eat);
 }
 
 // Function to create multiple threads, one for each philosopher.
 // It also initializes the forks and assigns them to each philosopher. 
-int     Multi_Threads(t_philo *philo)
+int      Multi_Threads(t_philo *philo)
 {
     int i;
-    t_philo *philos;
 
     i = 0;
-    philos = malloc(philo->info->num_of_philo * sizeof(t_philo));
-    if (philos == NULL) {
+    philo->info->philos = malloc(philo->info->num_of_philo * sizeof(t_philo));
+    if (philo->info->philos == NULL) {
         write_error("Memory allocation failed for philosophers");
         return 1;
     }
+    philo->info->dead_philo = 1;
     while (i < philo->info->num_of_philo)
     {
-        philos[i].info = philo->info;
-        philos[i].id = i + 1;
-        philos[i].num_of_eat = philo->info->num_of_eat;
-        philos[i].last_time_eat = get_current_time_ms();
+        philo->info->philos[i].info = philo->info;
+        philo->info->philos[i].id = i + 1;
+        philo->info->philos[i].num_of_eat = philo->info->num_of_eat;
+        philo->info->philos[i].last_time_eat = get_current_time_ms();
         if (i != philo->info->num_of_philo)
         {
-            philos[i].left_fork = i;  // Left fork is the current philosopher's index.
-            philos[i].right_fork = i + 1;  // Right fork is the next philosopher's index.
+            philo->info->philos[i].left_fork = i;  // Left fork is the current philosopher's index.
+            philo->info->philos[i].right_fork = i + 1;  // Right fork is the next philosopher's index.
         }
-        else if(i == philos->info->num_of_philo - 1)
+        else if(i == philo->info->num_of_philo - 1)
         {
-            philos[i].left_fork = i;  // Left fork is their index.
-            philos[i].right_fork = 0;  // Right fork is the first philosopher's fork (circular).
+            philo->info->philos[i].left_fork = i;  // Left fork is their index.
+            philo->info->philos[i].right_fork = 0;  // Right fork is the first philosopher's fork (circular).
         }
-        philos[i].last_time_eat = get_current_time_ms();
-        pthread_create(philos[i].info->threads, NULL, &Routine_Multi_Threads, (void *)&(philos)[i]);
+        philo->info->philos[i].last_time_eat = get_current_time_ms();
+        printf("Philosopher %d\n", philo->info->philos[i].id);
+        print_info(&philo->info->philos[i]);
+        printf("\n");
+        // pthread_create(philo->info->philos[i].info->threads, NULL, &Routine_Multi_Threads, (void *)&(philo->info->philos)[i]);
         i++;
     }
-    if(Check_Philos_State(&philos) == 0)
-    {
-            write_error("Philosopher is dead");
-            return (0);
-    }
+    // philo->info->philos[0].info->num_of_philo = 2;
+    // printf("Philosopher %d\n", philo->info->philos[0].id);
+    // print_info(&philo->info->philos[0]);
+    // printf("\n");
+    // printf("Philosopher %d\n", philo->info->philos[1].id);
+    // print_info(&philo->info->philos[1]);
+    // printf("\n");
+    // if(Check_Philos_State(&philo->info->philos) == 0)
+    // {
+    //     write_error("Philosopher is dead");
+    //     return (0);
+    // }
     return 1;
 }
+

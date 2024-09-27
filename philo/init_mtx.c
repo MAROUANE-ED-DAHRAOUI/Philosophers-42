@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 17:58:04 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/26 23:45:35 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/27 20:48:53 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ int init_several_mtx(t_philo *philo)
 */
 int Is_dead(t_philo *philo)
 {
+    
     if(philo == NULL)
         return (1);
     pthread_mutex_lock(&philo->info->t_check);
@@ -71,15 +72,15 @@ void *routine_one_thread(void *arg)
     pthread_mutex_lock(&philo->info->forks[0]);  // Philosopher picks up the only fork available.
     printf(BLUE"%ld 1 taken a fork\n"NC, time - philo->info->t_start);
     pthread_mutex_unlock(&philo->info->forks[0]); // Immediately releases the fork.(KAYHTHA)
-    
-    t_begin =get_current_time_ms();
+    t_begin = get_current_time_ms();
     if(Is_dead(philo) == 1)
     {
         while(get_current_time_ms() - t_begin < philo->info->t_to_die)
         {
-            usleep(1000);
+            usleep(200);
+        }
+        printf(RED"%ld 1 is dead\n"NC,get_current_time_ms() - philo->info->t_start);
     }
-    printf(RED"%ld 1 is dead\n"NC,get_current_time_ms() - philo->info->t_start);
     return (NULL);
 }
 

@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/26 23:42:31 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/27 11:15:45 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,7 +195,6 @@ int main(int ac, char **av)
         }
        if(check_threads(&philo) == 0)
         {
-            printf(RED"Ana hnaaaa\n"NC);
             write_error("Thread creation failed");
             free(philo.info);
             return (0);
