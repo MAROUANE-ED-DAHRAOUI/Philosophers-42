@@ -61,7 +61,7 @@ int         Is_dead(t_philo *philo);
 void        *routine_one_thread(void *arg);
 int         check_threads(t_philo *philo);
 int         Multi_Threads(t_philo *philo);
-int         Check_Philos_State(t_philo **Philos);
+int         Check_Philos_State(t_philo *Philos, t_info *info);
 int         thread_safe_print(char *str, t_philo *philo);
 int         check_take_forks(t_philo *philo);
 int         philos_alternates(t_philo *philo);

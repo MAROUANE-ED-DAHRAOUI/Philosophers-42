@@ -2,7 +2,7 @@
 
 int	thread_safe_print(char *str, t_philo *philo)
 {
-	printf("thread_safe_print-----\n");
+	// printf("thread_safe_print-----\n");
 	 	if(Is_dead(philo) == 0)
             return 0;
         pthread_mutex_lock(&philo->info->p_lock);
