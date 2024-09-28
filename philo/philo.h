@@ -19,6 +19,7 @@ typedef struct s_philo
 {
     int             id;
     int             num_of_eat;
+    int             max_eat;
     long            last_time_eat;
     int             right_fork;
     int             left_fork;
@@ -34,6 +35,7 @@ typedef struct s_info{
     int             t_to_eat;
     int             t_to_sleep;
     int             num_of_eat;
+    int             max_eat;
     int             dead_philo;
     int             arg_last;
     pthread_mutex_t *forks;

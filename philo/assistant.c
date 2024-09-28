@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/28 19:23:53 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/28 19:55:46 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,21 +81,10 @@ int     philos_alternates(t_philo *philo)
         pthread_mutex_unlock(philo->info->second_forks);
         // pthread_mutex_lock(&philo->info->t_success);
         philo->last_time_eat = get_current_time_ms();
+        pthread_mutex_lock(&philo->info->t_check);
+        philo->info->max_eat++;
+        pthread_mutex_unlock(&philo->info->t_check);
 
-        // pthread_mutex_unlock(&philo->info->t_success);
-        // _time = get_current_time_ms();
-        // while(get_current_time_ms() - _time < philo->info->t_to_sleep)
-        // {
-        //     if(Is_dead(philo) == 0)
-        //     {
-        //         printf("Philosopher is dead\n");
-        //         return 0;
-        //     }
-        //     usleep(200);
-        // }
-        // pthread_mutex_lock(&philo->info->t_success);
-        // philo->num_of_eat--;
-        // pthread_mutex_unlock(&philo->info->t_success);
         thread_safe_print("%ld %d is sleeping\n", philo);
         user_sleep(philo->info->t_to_sleep, philo);
         // _time = get_current_time_ms();
@@ -152,7 +141,7 @@ int Check_Philos_State(t_philo *Philos, t_info *info)
         while (i < info->num_of_philo)
         {
             s_time = get_current_time_ms() - Philos[i].last_time_eat;
-            if (s_time > info->t_to_die)
+            if (s_time > info->t_to_die || (info->max_eat == info->num_of_eat * info->num_of_philo))
             {
                 pthread_mutex_lock(&info->p_lock);
                 info->dead_philo = 0;
@@ -217,9 +206,8 @@ int      Multi_Threads(t_philo *philo)
     }
     if(Check_Philos_State(philo->info->philos, philo->info) == 0)
     {
-        write_error("Philosopher is deadddddd\n");
-        return (0);
+        return (1);
     }
-    return 1;
+    return 0;
 }
 

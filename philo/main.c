@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/27 11:15:45 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/28 19:50:59 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int check_values(t_philo **philo, char **av)
     if((*philo)->info->arg_last == 1)
         (*philo)->info->num_of_eat = ft_atoi(av[5]);
     else
-        (*philo)->info->num_of_eat = 0;
+        (*philo)->info->num_of_eat = -1;
 
     if ((*philo)->info->num_of_philo > 200 || (*philo)->info->num_of_philo <= 0 || 
         (*philo)->info->t_to_die < 60 || (*philo)->info->t_to_eat < 60 || 
@@ -62,6 +62,7 @@ int init_philo(t_philo *philo, char **av)
     philo->info->t_to_eat = ft_atoi(av[3]);
     philo->info->t_to_sleep = ft_atoi(av[4]);
     philo->info->num_of_eat = 0;
+    philo->info->max_eat = 0;
     // printf(BLUE"Number of philosophers = %d\n"NC, philo->info->num_of_philo);
     res = check_values(&philo, av);
     if(res == 0)
