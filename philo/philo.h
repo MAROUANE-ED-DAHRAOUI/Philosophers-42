@@ -37,6 +37,7 @@ typedef struct s_info{
     int             dead_philo;
     int             arg_last;
     pthread_mutex_t *forks;
+    pthread_mutex_t *second_forks;
     pthread_mutex_t p_lock;
     pthread_mutex_t t_check;
     pthread_mutex_t t_success;

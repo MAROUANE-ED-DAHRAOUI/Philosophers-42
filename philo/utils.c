@@ -3,13 +3,17 @@
 int	thread_safe_print(char *str, t_philo *philo)
 {
 	// printf("thread_safe_print-----\n");
-	 	if(Is_dead(philo) == 0)
-            return 0;
+	 	// if(Is_dead(philo) == 0)
+        //     return 0;
         pthread_mutex_lock(&philo->info->p_lock);
-        if(Is_dead(philo) == 1)
+        if(philo->info->dead_philo == 1)
+		{
             printf(str, get_current_time_ms() - philo->info->t_start, philo->id);
+			pthread_mutex_unlock(&philo->info->p_lock);
+			return (1);
+		}
         pthread_mutex_unlock(&philo->info->p_lock);
-		return (1);
+		return (0);
 }
 
 int ft_strncmp(const char *s1, const char *s2, size_t n)

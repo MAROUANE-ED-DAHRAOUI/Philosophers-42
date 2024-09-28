@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 17:58:04 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/27 22:50:40 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/09/28 18:38:40 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,16 +43,14 @@ int init_several_mtx(t_philo *philo)
 */
 int Is_dead(t_philo *philo)
 {
-    
-    if(philo == NULL)
-        return (1);
-    pthread_mutex_lock(&philo->info->t_check);
+    pthread_mutex_lock(&philo->info->p_lock);
     if(philo->info->dead_philo == 0)
     {
-        pthread_mutex_unlock(&philo->info->t_check);
+        printf(RED"%ld %d is dead\n"NC, get_current_time_ms() - philo->info->t_start, philo->id);
+        pthread_mutex_unlock(&philo->info->p_lock);
         return (0);
-    }  
-    pthread_mutex_unlock(&philo->info->t_check);
+    }
+    pthread_mutex_unlock(&philo->info->p_lock);
     return (1);
 }
 
