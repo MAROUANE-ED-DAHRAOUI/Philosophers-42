@@ -36,10 +36,17 @@ int write_error(char *str)
 int check_values(t_philo **philo, char **av)
 {
     if((*philo)->info->arg_last == 1)
-        (*philo)->info->num_of_eat = ft_atoi(av[5]);
+    {
+        (*philo)->info->round_meals = ft_atoi(av[5]);
+        (*philo)->info->cnt_meals = 0;
+        if((*philo)->info->round_meals <= 0)
+            return (0);
+    }
     else
-        (*philo)->info->num_of_eat = -1;
-
+    {
+        (*philo)->info->round_meals  = -1;
+        (*philo)->info->cnt_meals = 0;
+    }
     if ((*philo)->info->num_of_philo > 200 || (*philo)->info->num_of_philo <= 0 || 
         (*philo)->info->t_to_die < 60 || (*philo)->info->t_to_eat < 60 || 
         (*philo)->info->t_to_sleep < 60)
@@ -54,15 +61,16 @@ int check_values(t_philo **philo, char **av)
 int init_philo(t_philo *philo, char **av)
 {
     int res;
-
-    philo->info->dead_philo = 0;
-    philo->info->t_start = get_current_time_ms();
+    
     philo->info->num_of_philo = ft_atoi(av[1]);
     philo->info->t_to_die =  ft_atoi(av[2]);
     philo->info->t_to_eat = ft_atoi(av[3]);
     philo->info->t_to_sleep = ft_atoi(av[4]);
-    philo->info->num_of_eat = 0;
-    philo->info->max_eat = 0;
+    philo->info->t_start = get_current_time_ms();
+    philo->info->T_last_meal = get_current_time_ms();
+    philo->info->dead_philo = 0;
+    philo->info->round_meals  = 0;
+    philo->info->cnt_meals = 0;
     // printf(BLUE"Number of philosophers = %d\n"NC, philo->info->num_of_philo);
     res = check_values(&philo, av);
     if(res == 0)
@@ -144,9 +152,11 @@ int allocate_memory(t_philo *philo)
 {
     int success;
 
-    philo->info->forks = malloc(philo->info->num_of_philo * sizeof(pthread_mutex_t));
-    philo->info->threads = malloc(philo->info->num_of_philo * sizeof(pthread_t));
-    if(philo->info->threads == NULL || philo->info->forks == NULL)
+    philo->info->forks = malloc(sizeof(pthread_mutex_t) * philo->info->num_of_philo);
+    if(philo->info->forks == NULL)
+        return 0;
+    philo->info->philos = malloc(sizeof(t_philo) * philo->info->num_of_philo);
+    if(philo->info->philos == NULL)
         return 0;
     success = init_several_mtx(philo);
     if(success == 0)
@@ -194,16 +204,18 @@ int main(int ac, char **av)
                 return (0);
             }
         }
-       if(check_threads(&philo) == 0)
+       if(Lets_Go_Threads(&philo) == 0)
         {
             write_error("Thread creation failed");
             free(philo.info);
             return (0);
         }
     }
-    pthread_mutex_destroy(&philo.info->p_lock);
-    pthread_mutex_destroy(&philo.info->t_check);
-    pthread_mutex_destroy(&philo.info->t_success);
+    pthread_mutex_destroy(&philo.info->prt_lock);
+    pthread_mutex_destroy(&philo.info->lock_meal);
+    pthread_mutex_destroy(&philo.info->dead_lock);
+    pthread_mutex_destroy(&philo.info->philo_dead);
+    pthread_mutex_destroy(&philo.info->lst_meal_lock);
     while(i < philo.info->num_of_philo)
     {
         pthread_mutex_destroy(&philo.info->forks[i]);
