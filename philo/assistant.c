@@ -69,24 +69,23 @@ int    philos_infinite_loop(t_philo *philo)
     return (1);
 }
 
-int     initialize_philos(t_philo *philo)
+int initialize_philos(t_philo **philo)
 {
     int i;
-    t_philo *philos;
+
     i = 0;
-    while(i < philo->info->num_of_philo)
+    while (i < (*philo)->info->num_of_philo)
     {
-        philos = &(philo)->info->philos[i];
-        philos->info = philo->info;
-        philos->id = i + 1;
-        philos->info->t_to_die = philo->info->t_to_die;
-        philos->info->t_to_eat = philo->info->t_to_eat;
-        philos->info->t_to_sleep = philo->info->t_to_sleep;
-        philos->info->t_start = get_current_time_ms();
-        philos->info->meal_eaten = 0;
-        philos->info->T_last_meal = get_current_time_ms();
-        philos->left_fork = &philo->info->forks[i];
-        philos->right_fork = &philo->info->forks[(i + 1) % philo->info->num_of_philo];        
+        (*philo)->info->philos[i].info = (*philo)->info;
+        (*philo)->info->philos[i].id = i + 1;
+        (*philo)->info->philos[i].info->t_to_die = (*philo)->info->t_to_die;
+        (*philo)->info->philos[i].info->t_to_eat = (*philo)->info->t_to_eat;
+        (*philo)->info->philos[i].info->t_to_sleep = (*philo)->info->t_to_sleep;
+        (*philo)->info->philos[i].info->t_start = get_current_time_ms();
+        (*philo)->info->philos[i].info->meal_eaten = 0;
+        (*philo)->info->philos[i].info->T_last_meal = get_current_time_ms();
+        (*philo)->info->philos[i].left_fork = &(*philo)->info->forks[i];
+        (*philo)->info->philos[i].right_fork = &(*philo)->info->forks[(i + 1) % (*philo)->info->num_of_philo];
         i++;
     }
     return (1);
@@ -97,24 +96,25 @@ int      Lets_Go_Threads(t_philo *philo)
     int i;
 
     i = 0;
-    if(initialize_philos(philo) == 0)
+    if(initialize_philos(&philo) == 0)
         return (0);
     while(i < philo->info->num_of_philo)
     {
-        printf("ana hna\n");
+        philo->info->philos[i].threads = (pthread_t)malloc(sizeof(pthread_t));
+        if(!philo->info->philos[i].threads)
+            return (0);
         if(philo->info->philos[i].id % 2 == 0)
             usleep(200);
-        if(pthread_create(philo->info->philos[i].info->threads, NULL, &routine_Multi_thread, &philo->info->philos[i]) != 0)
-            return (0);
+        if(pthread_create(&philo->info->philos[i].threads, NULL, &routine_Multi_thread, &philo->info->philos[i]) != 0)
+            return (printf("hello ana hna\n"), 0);
         i++;
     }
     philos_infinite_loop(philo);
     i = 0;
     while(i < philo->info->num_of_philo)
     {
-        pthread_detach(*philo->info->philos[i].info->threads);
+        pthread_detach(philo->info->philos[i].threads);
         i++;
     }
     return (1);
-    
 }

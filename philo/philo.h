@@ -19,13 +19,13 @@ typedef struct s_philo
     int             id;
     int             round_meals ;
     int             cnt_meals;
+    pthread_t       threads;
     pthread_mutex_t *right_fork;
     pthread_mutex_t *left_fork;
     t_info          *info;
 }      t_philo;
 
 typedef struct s_info{
-    pthread_t       *threads;
     long            t_start;
     long            T_last_meal;
     int             num_of_philo;
@@ -58,11 +58,11 @@ int         init_several_mtx(t_philo *philo);
 int         allocate_memory(t_philo *philo);
 int         valide_args(int ac, char **av);
 int         Is_success(char *str);
-void        ft_free(t_philo **philo);
+void        ft_free(t_philo *philo);
 int         Is_dead(t_philo *philo);
 int         Lets_Go_Threads(t_philo *philo);
 int         philos_infinite_loop(t_philo *philo);
-int         initialize_philos(t_philo *philo);
+int         initialize_philos(t_philo **philo);
 void        *routine_Multi_thread(void *arg);
 int         _routine(t_philo *philo);
 int         _sleeping(t_philo *philo);
@@ -72,5 +72,6 @@ int         _forks(t_philo *philo);
 int         _thinking(t_philo *philo);
 int         ft_meals(t_philo *philo);
 void        sleep_philo(int time);
+void destroy_mutex(t_philo philo);
 
 #endif

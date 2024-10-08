@@ -129,5 +129,6 @@ void    *routine_Multi_thread(void *arg)
                 return (NULL);
         }
     }
+    printf("ana hahna\n");
     return (NULL);
 }

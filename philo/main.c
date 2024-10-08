@@ -16,13 +16,13 @@
  * Function to free all allocated memory for the philosopher simulation
     (threads, forks, and other info structures).
 */
-void ft_free(t_philo **philo)
+void ft_free(t_philo *philo)
 {
-    free((*philo));
-    free((*philo)->info->threads);
-    free((*philo)->info->forks);
-    free((*philo)->info);
-    free((*philo)->info->philos);
+    if(philo->info->forks != NULL)
+        free(philo->info->forks);
+    if(philo->info->philos != NULL)
+        free(philo->info->philos);
+    free(philo->info);
 }
 
 // Function to print an error message to the console and return an error code (1).
@@ -162,10 +162,28 @@ int allocate_memory(t_philo *philo)
     if(success == 0)
     {
         write_error("Mutex initialization failed");
-        ft_free(&philo);
+        ft_free(philo);
         return 0;
     }
     return (1);
+}
+
+void    destroy_mutex(t_philo philo)
+{
+    int i;
+
+    i = 0;
+    pthread_mutex_destroy(&philo.info->prt_lock);
+    pthread_mutex_destroy(&philo.info->lock_meal);
+    pthread_mutex_destroy(&philo.info->dead_lock);
+    pthread_mutex_destroy(&philo.info->philo_dead);
+    pthread_mutex_destroy(&philo.info->lst_meal_lock);
+    while(i < philo.info->num_of_philo)
+    {
+        pthread_mutex_destroy(&philo.info->forks[i]);
+        i++;
+    }
+    ft_free(&philo);
 }
 
 // Main function: Entry point of the philosopher simulation. Manages argument checking, memory allocation, and thread creation.
@@ -173,10 +191,8 @@ int main(int ac, char **av)
 {
     t_philo philo;
     int res;
-    int i;
 
     res = 0;
-    i = 0;
     philo.info = NULL;
     if (ac != 5 && ac != 6)
         return (write_error("Wrong amount of arguments"));
@@ -204,22 +220,14 @@ int main(int ac, char **av)
                 return (0);
             }
         }
-       if(Lets_Go_Threads(&philo) == 0)
-        {
-            write_error("Thread creation failed");
-            free(philo.info);
-            return (0);
-        }
     }
-    pthread_mutex_destroy(&philo.info->prt_lock);
-    pthread_mutex_destroy(&philo.info->lock_meal);
-    pthread_mutex_destroy(&philo.info->dead_lock);
-    pthread_mutex_destroy(&philo.info->philo_dead);
-    pthread_mutex_destroy(&philo.info->lst_meal_lock);
-    while(i < philo.info->num_of_philo)
+
+    if(Lets_Go_Threads(&philo) == 0)
     {
-        pthread_mutex_destroy(&philo.info->forks[i]);
-        i++;
+        write_error("Thread creation failed");
+        free(philo.info);
+        return (0);
     }
+    destroy_mutex(philo);
     return (0);
 }
