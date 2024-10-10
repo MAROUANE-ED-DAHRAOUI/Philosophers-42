@@ -22,13 +22,13 @@ int init_several_mtx(t_philo *philo)
     int i;
 
     i = 0;
-    pthread_mutex_init(&philo->info->prt_lock, NULL);
-    pthread_mutex_init(&philo->info->lock_meal, NULL);
-    pthread_mutex_init(&philo->info->dead_lock, NULL);
-    pthread_mutex_init(&philo->info->philo_dead, NULL);
+    pthread_mutex_init(&(philo->info->prt_lock), NULL);
+    pthread_mutex_init(&(philo->info->lock_meal), NULL);
+    pthread_mutex_init(&(philo->info->dead_lock), NULL);
+    pthread_mutex_init(&(philo->info->philo_dead), NULL);
     while(i < philo->info->num_of_philo)
     {
-        if(pthread_mutex_init(&philo->info->forks[i], NULL) != 0)
+        if(pthread_mutex_init(&(philo->info->forks[i]), NULL) != 0)
             return (0);
         i++;
     }
@@ -43,14 +43,14 @@ int Is_dead(t_philo *philo)
 {
     int _time;
 
-    pthread_mutex_lock(&philo->info->lst_meal_lock);
+    pthread_mutex_lock(&(philo->info->lst_meal_lock));
     _time = get_current_time_ms() - philo->info->T_last_meal;
     pthread_mutex_unlock(&philo->info->lst_meal_lock);
     if(_time >= philo->info->t_to_die)
     {
-        pthread_mutex_lock(&philo->info->dead_lock);
+        pthread_mutex_lock(&(philo->info->dead_lock));
         philo->info->dead_philo = 1;
-        pthread_mutex_lock(&philo->info->prt_lock);
+        pthread_mutex_lock(&(philo->info->prt_lock));
         printf(RED"%ld %d is dead\n"NC, get_current_time_ms() - philo->info->t_start, philo->id);
         return (0);
     }

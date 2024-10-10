@@ -150,21 +150,12 @@ int check_args(t_philo *philo, int ac, char **av)
 // Function to allocate memory for philosopher threads and forks. Also initializes mutexes.
 int allocate_memory(t_philo *philo)
 {
-    int success;
-
     philo->info->forks = malloc(sizeof(pthread_mutex_t) * philo->info->num_of_philo);
     if(philo->info->forks == NULL)
         return 0;
     philo->info->philos = malloc(sizeof(t_philo) * philo->info->num_of_philo);
     if(philo->info->philos == NULL)
         return 0;
-    success = init_several_mtx(philo);
-    if(success == 0)
-    {
-        write_error("Mutex initialization failed");
-        ft_free(philo);
-        return 0;
-    }
     return (1);
 }
 

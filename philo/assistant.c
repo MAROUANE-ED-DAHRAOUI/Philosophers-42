@@ -32,17 +32,17 @@ int     ft_meals(t_philo *philo)
     cnt = 0;
     while(i < philo->info->num_of_philo)
     {
-        pthread_mutex_lock(&(philo)->info->lock_meal);
+        pthread_mutex_lock(&philo->info->lock_meal);
         if(philo->info->philos[i].info->meal_eaten >= philo->info->round_meals)
                cnt++;
-        pthread_mutex_unlock(&(philo)->info->lock_meal);
+        pthread_mutex_unlock(&philo->info->lock_meal);
         i++;
     }
-    if(cnt == (philo)->info->num_of_philo)
+    if(cnt == philo->info->num_of_philo)
     {
-        pthread_mutex_lock(&(philo)->info->dead_lock);
+        pthread_mutex_lock(&philo->info->dead_lock);
         philo->info->dead_philo = 1;
-        pthread_mutex_unlock(&(philo)->info->dead_lock);
+        // pthread_mutex_unlock(&(philo->info->dead_lock));
         return (0);
     }
     return (1);
@@ -88,14 +88,28 @@ int initialize_philos(t_philo **philo)
         (*philo)->info->philos[i].right_fork = &(*philo)->info->forks[(i + 1) % (*philo)->info->num_of_philo];
         i++;
     }
+    if((*philo)->info->num_of_philo == 1)
+    {
+        printf("1 1 thinking\n");
+        printf("1 1 has taken a fork\n");
+        sleep_philo((*philo)->info->t_to_die);
+    }
     return (1);
 }
 
 int      Lets_Go_Threads(t_philo *philo)
 {
     int i;
+    int success;
 
     i = 0;
+    success = init_several_mtx(philo);
+    if(success == 0)
+    {
+        write_error("Mutex initialization failed");
+        ft_free(philo);
+        return 0;
+    }
     if(initialize_philos(&philo) == 0)
         return (0);
     while(i < philo->info->num_of_philo)
@@ -105,8 +119,8 @@ int      Lets_Go_Threads(t_philo *philo)
             return (0);
         if(philo->info->philos[i].id % 2 == 0)
             usleep(200);
-        if(pthread_create(&philo->info->philos[i].threads, NULL, &routine_Multi_thread, &philo->info->philos[i]) != 0)
-            return (printf("hello ana hna\n"), 0);
+        if(pthread_create(&(philo->info->philos[i].threads), NULL, &routine_Multi_thread, &philo->info->philos[i]) != 0)
+            return (0);
         i++;
     }
     philos_infinite_loop(philo);
