@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 17:58:04 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/28 19:54:44 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/13 12:52:01 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int init_several_mtx(t_philo *philo)
     pthread_mutex_init(&(philo->info->lock_meal), NULL);
     pthread_mutex_init(&(philo->info->dead_lock), NULL);
     pthread_mutex_init(&(philo->info->philo_dead), NULL);
+    pthread_mutex_init(&(philo->info->lst_meal_lock), NULL);
     while(i < philo->info->num_of_philo)
     {
         if(pthread_mutex_init(&(philo->info->forks[i]), NULL) != 0)
@@ -45,16 +46,22 @@ int Is_dead(t_philo *philo)
 
     pthread_mutex_lock(&(philo->info->lst_meal_lock));
     _time = get_current_time_ms() - philo->info->T_last_meal;
-    pthread_mutex_unlock(&philo->info->lst_meal_lock);
-    if(_time >= philo->info->t_to_die)
+    pthread_mutex_unlock(&(philo->info->lst_meal_lock));
+
+    if (_time >= philo->info->t_to_die)
     {
         pthread_mutex_lock(&(philo->info->dead_lock));
-        philo->info->dead_philo = 1;
-        pthread_mutex_lock(&(philo->info->prt_lock));
-        printf(RED"%ld %d is dead\n"NC, get_current_time_ms() - philo->info->t_start, philo->id);
-        return (0);
+        if (philo->info->dead_philo == 0) // Avoid race on multiple death prints.
+        {
+            philo->info->dead_philo = 1;
+            pthread_mutex_lock(&(philo->info->prt_lock));
+            printf(RED"%ld %d is dead\n"NC, get_current_time_ms() - philo->info->t_start, philo->id);
+            pthread_mutex_unlock(&(philo->info->prt_lock));
+        }
+        pthread_mutex_unlock(&(philo->info->dead_lock));
+        return 0;
     }
-    return (1);
+    return 1;
 }
 
 void    sleep_philo(int time)

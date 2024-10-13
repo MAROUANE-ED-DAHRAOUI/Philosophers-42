@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/28 19:55:46 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/12 15:49:12 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,38 +97,29 @@ int initialize_philos(t_philo **philo)
     return (1);
 }
 
-int      Lets_Go_Threads(t_philo *philo)
+int Lets_Go_Threads(t_philo *philo)
 {
     int i;
-    int success;
-
-    i = 0;
-    success = init_several_mtx(philo);
-    if(success == 0)
+    if (init_several_mtx(philo) == 0)
     {
         write_error("Mutex initialization failed");
         ft_free(philo);
         return 0;
     }
-    if(initialize_philos(&philo) == 0)
-        return (0);
-    while(i < philo->info->num_of_philo)
+    if (initialize_philos(&philo) == 0)
+        return 0;
+
+    for (i = 0; i < philo->info->num_of_philo; i++)
     {
-        philo->info->philos[i].threads = (pthread_t)malloc(sizeof(pthread_t));
-        if(!philo->info->philos[i].threads)
-            return (0);
-        if(philo->info->philos[i].id % 2 == 0)
+        if (pthread_create(&(philo->info->philos[i].threads), NULL, &routine_Multi_thread, &philo->info->philos[i]) != 0)
+            return 0;
+        if (philo->info->philos[i].id % 2 == 0)
             usleep(200);
-        if(pthread_create(&(philo->info->philos[i].threads), NULL, &routine_Multi_thread, &philo->info->philos[i]) != 0)
-            return (0);
-        i++;
     }
-    philos_infinite_loop(philo);
-    i = 0;
-    while(i < philo->info->num_of_philo)
-    {
-        pthread_detach(philo->info->philos[i].threads);
-        i++;
-    }
-    return (1);
+
+    for (i = 0; i < philo->info->num_of_philo; i++)
+        pthread_join(philo->info->philos[i].threads, NULL);  // Use join to wait for threads
+
+    return 1;
 }
+

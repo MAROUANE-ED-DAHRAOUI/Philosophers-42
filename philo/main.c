@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/09/28 19:50:59 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/12 15:49:32 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,21 +159,18 @@ int allocate_memory(t_philo *philo)
     return (1);
 }
 
-void    destroy_mutex(t_philo philo)
+void destroy_mutex(t_philo philo)
 {
     int i;
 
-    i = 0;
+    for (i = 0; i < philo.info->num_of_philo; i++)
+        pthread_mutex_destroy(&philo.info->forks[i]);
+
     pthread_mutex_destroy(&philo.info->prt_lock);
     pthread_mutex_destroy(&philo.info->lock_meal);
     pthread_mutex_destroy(&philo.info->dead_lock);
-    pthread_mutex_destroy(&philo.info->philo_dead);
     pthread_mutex_destroy(&philo.info->lst_meal_lock);
-    while(i < philo.info->num_of_philo)
-    {
-        pthread_mutex_destroy(&philo.info->forks[i]);
-        i++;
-    }
+
     ft_free(&philo);
 }
 
