@@ -61,7 +61,6 @@ int         Is_success(char *str);
 void        ft_free(t_philo *philo);
 int         Is_dead(t_philo *philo);
 int         Lets_Go_Threads(t_philo *philo);
-int         philos_infinite_loop(t_philo *philo);
 int         initialize_philos(t_philo **philo);
 void        *routine_Multi_thread(void *arg);
 int         _routine(t_philo *philo);
@@ -70,7 +69,6 @@ int         unlocking_forks(t_philo *philo);
 int         _eating(t_philo *philo);
 int         _forks(t_philo *philo);
 int         _thinking(t_philo *philo);
-int         ft_meals(t_philo *philo);
 void        sleep_philo(int time);
 void destroy_mutex(t_philo philo);
 

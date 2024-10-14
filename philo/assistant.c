@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/12 15:49:12 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/14 11:50:25 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,26 +48,24 @@ int     ft_meals(t_philo *philo)
     return (1);
 }
 
-int    philos_infinite_loop(t_philo *philo)
-{
-    int i;
+// int    philos_infinite_loop(t_philo *philo)
+// {
+//     int i;
 
-    i = 0;
-    while(1)
-    {
-        if(Is_dead(&(philo)->info->philos[i]) == 0)
-            break ;
-        if(philo->info->round_meals != -1 && philo->info->cnt_meals == 0)
-        {
-            if(ft_meals(philo) == 0)
-                break ;
-        }
-        i++;
-        if(i == philo->info->num_of_philo - 1)
-            i = 0;
-    }
-    return (1);
-}
+//     i = 0;
+//     while(1)
+//     {
+//         if(philo->info->round_meals != -1 && philo->info->cnt_meals == 0)
+//         {
+//             if(ft_meals(philo) == 0)
+//                 break ;
+//         }
+//         i++;
+//         if(i == philo->info->num_of_philo - 1)
+//             i = 0;
+//     }
+//     return (1);
+// }
 
 int initialize_philos(t_philo **philo)
 {
@@ -88,13 +86,20 @@ int initialize_philos(t_philo **philo)
         (*philo)->info->philos[i].right_fork = &(*philo)->info->forks[(i + 1) % (*philo)->info->num_of_philo];
         i++;
     }
-    if((*philo)->info->num_of_philo == 1)
+    return (1);
+}
+
+int     Num_philos(t_philo *philo)
+{
+    if(philo->info->num_of_philo == 1)
     {
         printf("1 1 thinking\n");
         printf("1 1 has taken a fork\n");
-        sleep_philo((*philo)->info->t_to_die);
+        sleep_philo(philo->info->t_to_die);
+        printf("1 1 is dead\n");
+        return (0);
     }
-    return (1);
+    return 1;
 }
 
 int Lets_Go_Threads(t_philo *philo)
@@ -108,13 +113,18 @@ int Lets_Go_Threads(t_philo *philo)
     }
     if (initialize_philos(&philo) == 0)
         return 0;
-
-    for (i = 0; i < philo->info->num_of_philo; i++)
-    {
+    if(Num_philos(philo) == 0)
+        return 0;
+    i = 0;
+    while (i < philo->info->num_of_philo)
+    { 
+        if(Is_dead(&philo->info->philos[i]) == 0)
+            return 0;
         if (pthread_create(&(philo->info->philos[i].threads), NULL, &routine_Multi_thread, &philo->info->philos[i]) != 0)
             return 0;
         if (philo->info->philos[i].id % 2 == 0)
-            usleep(200);
+            usleep(500);
+        i++;
     }
 
     for (i = 0; i < philo->info->num_of_philo; i++)
