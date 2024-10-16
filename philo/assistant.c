@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/14 11:50:25 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/14 13:55:33 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,30 +23,30 @@ long get_current_time_ms(void)
     return (tm.tv_sec * 1000 + tm.tv_usec / 1000);
 }
 
-int     ft_meals(t_philo *philo)
-{
-    int i;
-    int cnt;
+// int     ft_meals(t_philo *philo)
+// {
+//     int i;
+//     int cnt;
 
-    i = 0;
-    cnt = 0;
-    while(i < philo->info->num_of_philo)
-    {
-        pthread_mutex_lock(&philo->info->lock_meal);
-        if(philo->info->philos[i].info->meal_eaten >= philo->info->round_meals)
-               cnt++;
-        pthread_mutex_unlock(&philo->info->lock_meal);
-        i++;
-    }
-    if(cnt == philo->info->num_of_philo)
-    {
-        pthread_mutex_lock(&philo->info->dead_lock);
-        philo->info->dead_philo = 1;
-        // pthread_mutex_unlock(&(philo->info->dead_lock));
-        return (0);
-    }
-    return (1);
-}
+//     i = 0;
+//     cnt = 0;
+//     while(i < philo->info->num_of_philo)
+//     {
+//         pthread_mutex_lock(&philo->info->lock_meal);
+//         if(philo->info->philos[i].info->meal_eaten >= philo->info->round_meals)
+//                cnt++;
+//         pthread_mutex_unlock(&philo->info->lock_meal);
+//         i++;
+//     }
+//     if(cnt == philo->info->num_of_philo)
+//     {
+//         pthread_mutex_lock(&philo->info->dead_lock);
+//         philo->info->dead_philo = 1;
+//         // pthread_mutex_unlock(&(philo->info->dead_lock));
+//         return (0);
+//     }
+//     return (1);
+// }
 
 // int    philos_infinite_loop(t_philo *philo)
 // {
@@ -55,6 +55,8 @@ int     ft_meals(t_philo *philo)
 //     i = 0;
 //     while(1)
 //     {
+//         if(Is_dead(&(philo)->info->philos[i]) == 0)
+//             break ;
 //         if(philo->info->round_meals != -1 && philo->info->cnt_meals == 0)
 //         {
 //             if(ft_meals(philo) == 0)
@@ -117,13 +119,11 @@ int Lets_Go_Threads(t_philo *philo)
         return 0;
     i = 0;
     while (i < philo->info->num_of_philo)
-    { 
-        if(Is_dead(&philo->info->philos[i]) == 0)
-            return 0;
+    {
         if (pthread_create(&(philo->info->philos[i].threads), NULL, &routine_Multi_thread, &philo->info->philos[i]) != 0)
             return 0;
         if (philo->info->philos[i].id % 2 == 0)
-            usleep(500);
+            usleep(200);
         i++;
     }
 

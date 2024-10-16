@@ -69,6 +69,7 @@ int         unlocking_forks(t_philo *philo);
 int         _eating(t_philo *philo);
 int         _forks(t_philo *philo);
 int         _thinking(t_philo *philo);
+int         ft_meals(t_philo *philo);
 void        sleep_philo(int time);
 void destroy_mutex(t_philo philo);
 
