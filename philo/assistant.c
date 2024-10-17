@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/14 13:55:33 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/17 12:50:41 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ long get_current_time_ms(void)
 //     while(i < philo->info->num_of_philo)
 //     {
 //         pthread_mutex_lock(&philo->info->lock_meal);
-//         if(philo->info->philos[i].info->meal_eaten >= philo->info->round_meals)
+//         if(philo->info->philos[i].info->num_meal >= philo->info->limit_meals)
 //                cnt++;
 //         pthread_mutex_unlock(&philo->info->lock_meal);
 //         i++;
@@ -57,7 +57,7 @@ long get_current_time_ms(void)
 //     {
 //         if(Is_dead(&(philo)->info->philos[i]) == 0)
 //             break ;
-//         if(philo->info->round_meals != -1 && philo->info->cnt_meals == 0)
+//         if(philo->info->limit_meals != -1 && philo->info->cnt_meals == 0)
 //         {
 //             if(ft_meals(philo) == 0)
 //                 break ;
@@ -74,6 +74,7 @@ int initialize_philos(t_philo **philo)
     int i;
 
     i = 0;
+    (*philo)->info->philos[i].info->t_start = get_current_time_ms();
     while (i < (*philo)->info->num_of_philo)
     {
         (*philo)->info->philos[i].info = (*philo)->info;
@@ -81,11 +82,13 @@ int initialize_philos(t_philo **philo)
         (*philo)->info->philos[i].info->t_to_die = (*philo)->info->t_to_die;
         (*philo)->info->philos[i].info->t_to_eat = (*philo)->info->t_to_eat;
         (*philo)->info->philos[i].info->t_to_sleep = (*philo)->info->t_to_sleep;
-        (*philo)->info->philos[i].info->t_start = get_current_time_ms();
-        (*philo)->info->philos[i].info->meal_eaten = 0;
-        (*philo)->info->philos[i].info->T_last_meal = get_current_time_ms();
+        (*philo)->info->philos[i].info->num_meal = 0;
+        (*philo)->info->philos[i].info->last_meal = get_current_time_ms();
         (*philo)->info->philos[i].left_fork = &(*philo)->info->forks[i];
         (*philo)->info->philos[i].right_fork = &(*philo)->info->forks[(i + 1) % (*philo)->info->num_of_philo];
+        pthread_mutex_init(&(*philo)->info->philos[i].lock_meal, NULL);
+        pthread_mutex_init(&(*philo)->info->philos[i].mutex_time, NULL);
+        pthread_create(&(*philo)->info->philos[i].threads, NULL, &routine_Multi_thread, &(*philo)->info->philos[i]);
         i++;
     }
     return (1);
@@ -104,32 +107,60 @@ int     Num_philos(t_philo *philo)
     return 1;
 }
 
+int state_philos(t_philo *philo)
+{
+    // if(philo->info->dead_philo == 1)
+    //     return 0;
+    // return 1;
+}
+
+int monitor_state_philo(t_philo *philo)
+{
+    int i;
+    int max;
+
+    i = 0;
+    while(1)
+    {
+        max = INT_MIN;
+        while(i < philo->info->num_of_philo)
+        {
+            if(state_philos(&philo->info->philos[i]) == 0)
+                return 0;
+            if(philo->limit_meals != -1 && philo->info->num_meal < max)
+                max = philo->info->num_meal;
+            pthread_mutex_unlock(&philo->info->philo_dead);
+            pthread_mutex_unlock(&philo[i].mutex_time);
+            pthread_mutex_unlock(&philo[i].lock_meal);
+        }
+        if (philo->limit_meals != -1 && philo->limit_meals <= max)
+        {
+            philo->info->_exit = true;
+            return 2;
+        }
+        usleep(700);
+    }
+    return (1);
+}
+
 int Lets_Go_Threads(t_philo *philo)
 {
     int i;
-    if (init_several_mtx(philo) == 0)
-    {
-        write_error("Mutex initialization failed");
-        ft_free(philo);
-        return 0;
-    }
-    if (initialize_philos(&philo) == 0)
-        return 0;
+   
     if(Num_philos(philo) == 0)
         return 0;
     i = 0;
-    while (i < philo->info->num_of_philo)
+    if(monitor_state_philo(philo))
+        printf("%ld %d %s\n", (get_current_time_ms() - philo->info->t_start), philo->id, "is dead");
+    pthread_mutex_lock(&philo->info->philo_dead);
+    philo->info->_exit = true;
+    pthread_mutex_unlock(&philo->info->philo_dead);
+    while(i < philo->info->num_of_philo)
     {
-        if (pthread_create(&(philo->info->philos[i].threads), NULL, &routine_Multi_thread, &philo->info->philos[i]) != 0)
-            return 0;
-        if (philo->info->philos[i].id % 2 == 0)
-            usleep(200);
+        pthread_join(philo->info->philos[i].threads, NULL);
         i++;
     }
-
-    for (i = 0; i < philo->info->num_of_philo; i++)
-        pthread_join(philo->info->philos[i].threads, NULL);  // Use join to wait for threads
-
+    ft_free(philo);
     return 1;
 }
 

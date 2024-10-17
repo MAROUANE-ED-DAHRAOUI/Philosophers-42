@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/14 13:56:00 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/17 13:34:04 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,14 @@
 */
 void ft_free(t_philo *philo)
 {
-    if(philo->info->forks != NULL)
-        free(philo->info->forks);
-    if(philo->info->philos != NULL)
-        free(philo->info->philos);
-    free(philo->info);
+    int i;
+
+    i = 0;
+    while(i < philo->info->num_of_philo)
+    {
+       pthread_mutex_destroy(&philo->info->forks[i]);
+       
+    }
 }
 
 // Function to print an error message to the console and return an error code (1).
@@ -33,20 +36,8 @@ int write_error(char *str)
 }
 
 // Function to validate the philosopher's input values and return 0 or 1 depending on their validity.
-int check_values(t_philo **philo, char **av)
+int check_values(t_philo **philo)
 {
-    if((*philo)->info->arg_last == 1)
-    {
-        (*philo)->info->round_meals = ft_atoi(av[5]);
-        (*philo)->info->cnt_meals = 0;
-        if((*philo)->info->round_meals <= 0)
-            return (0);
-    }
-    else
-    {
-        (*philo)->info->round_meals  = -1;
-        (*philo)->info->cnt_meals = 0;
-    }
     if ((*philo)->info->num_of_philo > 200 || (*philo)->info->num_of_philo <= 0 || 
         (*philo)->info->t_to_die < 60 || (*philo)->info->t_to_eat < 60 || 
         (*philo)->info->t_to_sleep < 60)
@@ -60,22 +51,33 @@ int check_values(t_philo **philo, char **av)
 // Function to initialize philosopher information, including start time and various simulation parameters.
 int init_philo(t_philo *philo, char **av)
 {
-    int res;
-    
+    if (allocate_memory(philo, av) == 0)
+    {
+            write_error("Memory allocation failed");
+            return (0);
+    }
     philo->info->num_of_philo = ft_atoi(av[1]);
     philo->info->t_to_die =  ft_atoi(av[2]);
     philo->info->t_to_eat = ft_atoi(av[3]);
     philo->info->t_to_sleep = ft_atoi(av[4]);
     philo->info->t_start = get_current_time_ms();
-    philo->info->T_last_meal = get_current_time_ms();
-    philo->info->dead_philo = 0;
-    philo->info->round_meals  = 0;
-    philo->info->cnt_meals = 0;
-    // printf(BLUE"Number of philosophers = %d\n"NC, philo->info->num_of_philo);
-    res = check_values(&philo, av);
-    if(res == 0)
-        return (0);
+    philo->info->last_meal = get_current_time_ms();
+    philo->id = -1;
+    philo->info->_exit = false;
+    if(av[5] != NULL)
+        philo->info->limit_meals = ft_atoi(av[5]);
     else
+        philo->info->limit_meals = -1;
+    if (init_several_mtx(philo) == 0)
+    {
+        write_error("Mutex initialization failed");
+        ft_free(philo);
+        return 0;
+    }
+    if(!check_values(&philo))
+        return (0);
+    if (initialize_philos(&philo) == 0)
+            return (0);
         return (1);
 }
 
@@ -124,36 +126,28 @@ int valide_args(int ac, char **av)
 // Function to check command-line arguments and initialize philosopher data based on those arguments.
 int check_args(t_philo *philo, int ac, char **av)
 {
-    int res;
-
     if(ac == 5 || ac == 6)
     {
-        if(ac == 6)
-            philo->info->arg_last = 1;
-        else
-            philo->info->arg_last = 0;
-
         if(valide_args(ac, av) == 0)
             return (0);
         else
         {
-            res = (int)init_philo(philo, av);
-            if(res == 0)
-                return (0);
-            else  
+            if(init_philo(philo, av))
                 return (1);
+            else
+                return (0);
         }
     }
     return (0);
 }
 
 // Function to allocate memory for philosopher threads and forks. Also initializes mutexes.
-int allocate_memory(t_philo *philo)
+int allocate_memory(t_philo *philo, char **av)
 {
-    philo->info->forks = malloc(sizeof(pthread_mutex_t) * philo->info->num_of_philo);
+    philo->info->forks = malloc(sizeof(pthread_mutex_t) * ft_atoi(av[1]));
     if(philo->info->forks == NULL)
         return 0;
-    philo->info->philos = malloc(sizeof(t_philo) * philo->info->num_of_philo);
+    philo->info->philos = malloc(sizeof(t_philo) * ft_atoi(av[1]));
     if(philo->info->philos == NULL)
         return 0;
     return (1);
@@ -193,28 +187,22 @@ int main(int ac, char **av)
             free(philo.info);
             return (0);
         }
-        res = check_args(&philo, ac, av);
-        if (res == 0)
+        
+        if (check_args(&philo, ac, av))
         {
-            write_error("Wrong arguments");
-            free(philo.info);
-            return (0);
-        }
-        else
-        {
-           if (allocate_memory(&philo) == 0)
+            if(Lets_Go_Threads(&philo) == 0)
             {
-                write_error("Memory allocation failed");
+                write_error("Thread creation failed");
+                free(philo.info);
                 return (0);
             }
         }
-    }
-
-    if(Lets_Go_Threads(&philo) == 0)
-    {
-        write_error("Thread creation failed");
-        free(philo.info);
-        return (0);
+        else
+        {
+            write_error("Invalid arguments");
+            free(philo.info);
+            return (0);
+        }
     }
     destroy_mutex(philo);
     return (0);
