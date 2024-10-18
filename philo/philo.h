@@ -7,6 +7,7 @@
 # include <pthread.h>
 # include <stdbool.h>
 #include <sys/time.h>
+#include <limits.h>
 
 typedef struct s_info t_info;
 

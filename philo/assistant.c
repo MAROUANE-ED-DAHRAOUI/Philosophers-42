@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/17 12:50:41 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/18 13:46:15 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,11 +107,33 @@ int     Num_philos(t_philo *philo)
     return 1;
 }
 
+void looking_mutex(t_philo *philo)
+{
+    pthread_mutex_lock(&philo->lock_meal);
+    pthread_mutex_unlock(&philo->mutex_time);
+    pthread_mutex_unlock(&philo->info->dead_lock);
+}
+
+void unlocking_mutex(t_philo *philo)
+{
+    pthread_mutex_unlock(&philo->lock_meal);
+    pthread_mutex_unlock(&philo->mutex_time);
+    pthread_mutex_unlock(&philo->info->dead_lock);
+}
+
 int state_philos(t_philo *philo)
 {
-    // if(philo->info->dead_philo == 1)
-    //     return 0;
-    // return 1;
+   int  _time;
+
+    looking_mutex(philo);
+   _time = (get_current_time_ms() - philo->info->last_meal);
+    while(_time > philo->info->t_to_die)
+    {
+        pthread_mutex_lock(&philo->info->prt_lock);
+        return 1;
+    }
+    unlocking_mutex(philo);
+    return (1);
 }
 
 int monitor_state_philo(t_philo *philo)

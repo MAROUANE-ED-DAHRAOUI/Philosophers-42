@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/17 13:34:04 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/18 13:51:52 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,15 @@ void ft_free(t_philo *philo)
     while(i < philo->info->num_of_philo)
     {
        pthread_mutex_destroy(&philo->info->forks[i]);
-       
+       pthread_mutex_destroy(&philo->info->philos[i].lock_meal);
+       pthread_mutex_destroy(&philo->info->philos[i].mutex_time);
+       i++;
     }
+    pthread_mutex_destroy(&philo->info->prt_lock);
+    pthread_mutex_destroy(&philo->info->philo_dead);
+    free(philo->info->forks);
+    free(philo->info->philos);
+    free(philo->info);
 }
 
 // Function to print an error message to the console and return an error code (1).
@@ -153,20 +160,20 @@ int allocate_memory(t_philo *philo, char **av)
     return (1);
 }
 
-void destroy_mutex(t_philo philo)
-{
-    int i;
+// void destroy_mutex(t_philo philo)
+// {
+//     int i;
 
-    for (i = 0; i < philo.info->num_of_philo; i++)
-        pthread_mutex_destroy(&philo.info->forks[i]);
+//     for (i = 0; i < philo.info->num_of_philo; i++)
+//         pthread_mutex_destroy(&philo.info->forks[i]);
 
-    pthread_mutex_destroy(&philo.info->prt_lock);
-    pthread_mutex_destroy(&philo.info->lock_meal);
-    pthread_mutex_destroy(&philo.info->dead_lock);
-    pthread_mutex_destroy(&philo.info->lst_meal_lock);
+//     pthread_mutex_destroy(&philo.info->prt_lock);
+//     pthread_mutex_destroy(&philo.lock_meal);
+//     pthread_mutex_destroy(&philo.info->dead_lock);
+//     pthread_mutex_destroy(&philo.info->philo_dead);
 
-    ft_free(&philo);
-}
+//     ft_free(&philo);
+// }
 
 // Main function: Entry point of the philosopher simulation. Manages argument checking, memory allocation, and thread creation.
 int main(int ac, char **av)
@@ -204,6 +211,6 @@ int main(int ac, char **av)
             return (0);
         }
     }
-    destroy_mutex(philo);
+    ft_free(&philo);
     return (0);
 }
