@@ -21,6 +21,9 @@ typedef struct s_philo
     int             id;
     int             limit_meals ;
     int             cnt_meals;
+    int             num_meal;
+    long            last_meal;
+    long            t_start;
     pthread_t       threads;
     pthread_mutex_t *right_fork;
     pthread_mutex_t *left_fork;
@@ -30,8 +33,6 @@ typedef struct s_philo
 }      t_philo;
 
 typedef struct s_info{
-    long            t_start;
-    long            last_meal;
     int             num_of_philo;
     int             t_to_die;
     int             t_to_eat;
@@ -40,7 +41,6 @@ typedef struct s_info{
     int             cnt_meals;
     bool            _exit;
     int             limit_meals ;
-    int             num_meal;
     pthread_mutex_t *forks;
     pthread_mutex_t prt_lock;
     pthread_mutex_t dead_lock;
@@ -69,11 +69,12 @@ void        *routine_Multi_thread(void *arg);
 int         _routine(t_philo *philo);
 int         _sleeping(t_philo *philo);
 int         unlocking_forks(t_philo *philo);
+void        print_moves(t_philo *philo, char *str);
 int         _eating(t_philo *philo);
 int         _forks(t_philo *philo);
 int         _thinking(t_philo *philo);
-// int         ft_meals(t_philo *philo);
+int         One_thread(t_philo *philo);
 void        sleep_philo(int time);
-void destroy_mutex(t_philo philo);
+int         One_thread(t_philo *philo);
 
 #endif

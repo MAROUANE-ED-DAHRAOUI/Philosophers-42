@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/18 13:51:52 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/20 18:08:35 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,8 @@ int init_philo(t_philo *philo, char **av)
     philo->info->t_to_die =  ft_atoi(av[2]);
     philo->info->t_to_eat = ft_atoi(av[3]);
     philo->info->t_to_sleep = ft_atoi(av[4]);
-    philo->info->t_start = get_current_time_ms();
-    philo->info->last_meal = get_current_time_ms();
+    philo->t_start = get_current_time_ms();
+    philo->last_meal = get_current_time_ms();
     philo->id = -1;
     philo->info->_exit = false;
     if(av[5] != NULL)
