@@ -3,7 +3,7 @@ FILES= main.c utils.c init_mtx.c assistant.c routine.c
 OBJ= $(FILES:.c=.o)
 
 NAME= philo
-CC= cc -Werror -Wall -Wextra -fsanitize=thread -g
+CC= cc -Werror -Wall -Wextra -fsanitize=address -g
 RM= rm -rf
 
 

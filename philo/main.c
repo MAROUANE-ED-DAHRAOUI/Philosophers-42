@@ -179,37 +179,34 @@ int allocate_memory(t_philo *philo, char **av)
 int main(int ac, char **av)
 {
     t_philo philo;
-    int res;
 
-    res = 0;
     philo.info = NULL;
     if (ac != 5 && ac != 6)
         return (write_error("Wrong amount of arguments"));
+    philo.info = malloc(sizeof(t_info));
+    if (philo.info == NULL)
+    {
+        write_error("Memory allocation failed");
+        free(philo.info);
+        return (0);
+    }
+        
+    if (check_args(&philo, ac, av))
+    {
+        if(Lets_Go_Threads(&philo) == 0)
+        {
+            write_error("Thread creation failed");
+             if (philo.info != NULL)
+                    free(philo.info);
+                return (0);
+        }
+    }
     else
     {
-        philo.info = malloc(sizeof(t_info));
-        if (philo.info == NULL)
-        {
-            write_error("Memory allocation failed");
-            free(philo.info);
-            return (0);
-        }
-        
-        if (check_args(&philo, ac, av))
-        {
-            if(Lets_Go_Threads(&philo) == 0)
-            {
-                write_error("Thread creation failed");
+        write_error("Invalid arguments");
+         if (philo.info != NULL)
                 free(philo.info);
-                return (0);
-            }
-        }
-        else
-        {
-            write_error("Invalid arguments");
-            free(philo.info);
-            return (0);
-        }
+        return (0);
     }
     ft_free(&philo);
     return (0);

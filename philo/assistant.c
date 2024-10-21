@@ -43,7 +43,12 @@ int initialize_philos(t_philo **philo)
         (*philo)->info->philos[i].t_start = get_current_time_ms();
         pthread_mutex_init(&(*philo)->info->philos[i].lock_meal, NULL);
         pthread_mutex_init(&(*philo)->info->philos[i].mutex_time, NULL);
-        pthread_create(&(*philo)->info->philos[i].threads, NULL, &routine_Multi_thread, &(*philo)->info->philos[i]); pthread_create(&(*philo)->info->philos[i].threads, NULL, &routine_Multi_thread, &(*philo)->info->philos[i]);
+        pthread_create(&(*philo)->info->philos[i].threads, NULL, &routine_Multi_thread, &(*philo)->info->philos[i]);
+        // pthread_create(&(*philo)->info->philos[i].threads, NULL, &routine_Multi_thread, &(*philo)->info->philos[i]);
+    if (philo == NULL || (*philo)->info == NULL) {
+        fprintf(stderr, "Philosopher or philosopher info is not initialized\n");
+        return -1;
+        }
         i++;
     }
     return (1);
@@ -66,13 +71,16 @@ void unlocking_mutex(t_philo *philo)
 int state_philos(t_philo *philo)
 {   
     looking_mutex(philo);
+    pthread_mutex_lock(&philo->mutex);
     if((get_current_time_ms() - philo->last_meal) >= philo->info->t_to_die)
     {
         philo->info->dead_philo = philo->id;
         philo->info->_exit = true;
+        pthread_mutex_unlock(&philo->mutex);
         unlocking_mutex(philo);
         return 0;
     }
+    pthread_mutex_unlock(&philo->mutex);
     return (1);
 }
 
