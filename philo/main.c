@@ -32,7 +32,7 @@ void ft_free(t_philo *philo)
     pthread_mutex_destroy(&philo->info->philo_dead);
     free(philo->info->forks);
     free(philo->info->philos);
-    free(philo->info);
+    // free(philo->info);
 }
 
 // Function to print an error message to the console and return an error code (1).
@@ -70,7 +70,8 @@ int init_philo(t_philo *philo, char **av)
     philo->t_start = get_current_time_ms();
     philo->last_meal = get_current_time_ms();
     philo->id = -1;
-    philo->info->_exit = false;
+    philo->info->_exit = true;
+    philo->info->dead_id = -1;
     if(av[5] != NULL)
         philo->info->limit_meals = ft_atoi(av[5]);
     else
@@ -160,21 +161,6 @@ int allocate_memory(t_philo *philo, char **av)
     return (1);
 }
 
-// void destroy_mutex(t_philo philo)
-// {
-//     int i;
-
-//     for (i = 0; i < philo.info->num_of_philo; i++)
-//         pthread_mutex_destroy(&philo.info->forks[i]);
-
-//     pthread_mutex_destroy(&philo.info->prt_lock);
-//     pthread_mutex_destroy(&philo.lock_meal);
-//     pthread_mutex_destroy(&philo.info->dead_lock);
-//     pthread_mutex_destroy(&philo.info->philo_dead);
-
-//     ft_free(&philo);
-// }
-
 // Main function: Entry point of the philosopher simulation. Manages argument checking, memory allocation, and thread creation.
 int main(int ac, char **av)
 {
@@ -208,6 +194,8 @@ int main(int ac, char **av)
                 free(philo.info);
         return (0);
     }
+    if(philo.info != NULL)
+        free(philo.info);
     ft_free(&philo);
     return (0);
 }

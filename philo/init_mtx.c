@@ -41,13 +41,18 @@ int init_several_mtx(t_philo *philo)
 */
 int Is_dead(t_philo *philo)
 {
-    pthread_mutex_lock(&(philo->info->philo_dead));
-    if(philo->info->_exit == true)
+    long    time;
+
+    time = get_current_time_ms();
+    pthread_mutex_lock(&(philo->mutex));
+    if((time - philo->last_meal) >= philo->info->t_to_die)
     {
-        pthread_mutex_unlock(&(philo->info->philo_dead));
+        philo->info->dead_philo = philo->id;
+        philo->info->_exit = 0;
+        pthread_mutex_unlock(&(philo->mutex));
         return (0);
     }
-    pthread_mutex_unlock(&(philo->info->philo_dead));
+    pthread_mutex_unlock(&(philo->mutex));
     return (1);
 }
 

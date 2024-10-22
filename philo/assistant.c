@@ -20,7 +20,7 @@ long get_current_time_ms(void)
     struct timeval  tm;
 
     gettimeofday(&tm, NULL);
-    return (tm.tv_sec * 1000 + tm.tv_usec / 1000);
+    return (tm.tv_sec * 1000) + (tm.tv_usec / 1000);
 }
 
 int initialize_philos(t_philo **philo)
@@ -44,43 +44,48 @@ int initialize_philos(t_philo **philo)
         pthread_mutex_init(&(*philo)->info->philos[i].lock_meal, NULL);
         pthread_mutex_init(&(*philo)->info->philos[i].mutex_time, NULL);
         pthread_create(&(*philo)->info->philos[i].threads, NULL, &routine_Multi_thread, &(*philo)->info->philos[i]);
-        // pthread_create(&(*philo)->info->philos[i].threads, NULL, &routine_Multi_thread, &(*philo)->info->philos[i]);
-    if (philo == NULL || (*philo)->info == NULL) {
-        fprintf(stderr, "Philosopher or philosopher info is not initialized\n");
-        return -1;
-        }
         i++;
     }
     return (1);
 }
 
-void looking_mutex(t_philo *philo)
+void looking_mutex(t_philo **philo)
 {
-    pthread_mutex_lock(&philo->lock_meal);
-    pthread_mutex_unlock(&philo->mutex_time);
-    pthread_mutex_unlock(&philo->info->dead_lock);
+    pthread_mutex_lock(&(*philo)->lock_meal);
+    pthread_mutex_unlock(&(*philo)->mutex_time);
+    pthread_mutex_unlock(&(*philo)->info->dead_lock);
 }
 
-void unlocking_mutex(t_philo *philo)
+void unlocking_mutex(t_philo **philo)
 {
-    pthread_mutex_unlock(&philo->lock_meal);
-    pthread_mutex_unlock(&philo->mutex_time);
-    pthread_mutex_unlock(&philo->info->dead_lock);
+    pthread_mutex_unlock(&(*philo)->lock_meal);
+    pthread_mutex_unlock(&(*philo)->mutex_time);
+    pthread_mutex_unlock(&(*philo)->info->dead_lock);
 }
 
-int state_philos(t_philo *philo)
-{   
-    looking_mutex(philo);
+static int state_philos(t_philo *philo)
+{
+    static int i;
+
+    // while(i < philo->info->num_of_philo)
+    // {
+    //         printf("id %d = %d\n", i, philo->info->philos[i].id);
+    //         i++;
+    // }
+    i = 0;
+    looking_mutex(&philo);
     pthread_mutex_lock(&philo->mutex);
     if((get_current_time_ms() - philo->last_meal) >= philo->info->t_to_die)
     {
-        philo->info->dead_philo = philo->id;
-        philo->info->_exit = true;
+        philo->info->dead_id = philo->info->philos[i].id;
+        philo->info->_exit = false;
         pthread_mutex_unlock(&philo->mutex);
-        unlocking_mutex(philo);
+        unlocking_mutex(&philo);
+        // i++;
         return 0;
     }
     pthread_mutex_unlock(&philo->mutex);
+    unlocking_mutex(&philo);
     return (1);
 }
 
@@ -98,15 +103,16 @@ int monitor_state_philo(t_philo *philo)
             if(state_philos(&philo[i]) == 0)
                 return 0;
             if(philo->limit_meals != -1 && philo[i].num_meal < max)
-                max = philo->num_meal;
+                max = philo[i].num_meal;
             pthread_mutex_unlock(&philo->info->philo_dead);
             pthread_mutex_unlock(&philo[i].mutex_time);
             pthread_mutex_unlock(&philo[i].lock_meal);
         }
+
         if (philo->limit_meals != -1 && philo->limit_meals <= max)
         {
-            philo->info->_exit = true;
-            return 2;
+            philo->info->_exit = false;
+            return 0;
         }
         usleep(500);
     }
@@ -118,14 +124,13 @@ int Lets_Go_Threads(t_philo *philo)
     int i;
 
     i = -1;
-    if(monitor_state_philo(philo))
-        printf("%ld %d %s\n", (get_current_time_ms() - philo->t_start), philo->id, "is dead");
+    if(monitor_state_philo(philo) == 0)
+        printf("%ld %d is dead\n", (get_current_time_ms() - philo->t_start), philo->info->dead_id);
     pthread_mutex_lock(&philo->info->philo_dead);
-    philo->info->_exit = true;
+    philo->info->_exit = false;
     pthread_mutex_unlock(&philo->info->philo_dead);
     while(++i < philo->info->num_of_philo)
             pthread_join(philo->info->philos[i].threads, NULL);
     ft_free(philo);
     return 1;
 }
-

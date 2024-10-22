@@ -34,6 +34,7 @@ typedef struct s_philo
 }      t_philo;
 
 typedef struct s_info{
+    int             dead_id;
     int             num_of_philo;
     int             t_to_die;
     int             t_to_eat;
@@ -67,13 +68,13 @@ int         monitor_state_philo(t_philo *philo);
 int         Lets_Go_Threads(t_philo *philo);
 int         initialize_philos(t_philo **philo);
 void        *routine_Multi_thread(void *arg);
-int         _routine(t_philo *philo);
-int         _sleeping(t_philo *philo);
+// void         _routine(t_philo *philo);
+void         _sleeping(t_philo *philo);
 int         unlocking_forks(t_philo *philo);
 void        print_moves(t_philo *philo, char *str);
-int         _eating(t_philo *philo);
-int         _forks(t_philo *philo);
-int         _thinking(t_philo *philo);
+void         _eating(t_philo *philo);
+// void         _forks(t_philo *philo);
+void        _thinking(t_philo *philo);
 int         One_thread(t_philo *philo);
 void        sleep_philo(int time);
 int         One_thread(t_philo *philo);

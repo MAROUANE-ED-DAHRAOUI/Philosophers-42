@@ -6,7 +6,6 @@ NAME= philo
 CC= cc -Werror -Wall -Wextra -fsanitize=address -g
 RM= rm -rf
 
-
 all :$(NAME)
 
 $(NAME): philo.h $(OBJ)
@@ -17,6 +16,7 @@ $(NAME): philo.h $(OBJ)
 
 clean:
 	$(RM) $(OBJ)
+
 fclean: clean
 	$(RM) $(NAME)
 
