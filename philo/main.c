@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/20 18:08:35 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/23 16:45:05 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,7 @@ int init_philo(t_philo *philo, char **av)
     }
     if(!check_values(&philo))
         return (0);
-    if (initialize_philos(&philo) == 0)
-            return (0);
-        return (1);
+    return (1);
 }
 
 // Function to check if an argument string is a valid integer (within bounds of int).
@@ -178,7 +176,9 @@ int main(int ac, char **av)
     }
         
     if (check_args(&philo, ac, av))
-    {
+    {   
+        if (initialize_philos(&philo) == 0)
+            return (0);
         if(Lets_Go_Threads(&philo) == 0)
         {
             write_error("Thread creation failed");

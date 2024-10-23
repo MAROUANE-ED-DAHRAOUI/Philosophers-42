@@ -19,7 +19,6 @@ typedef struct s_info t_info;
 typedef struct s_philo
 {
     int             id;
-    int             limit_meals ;
     int             cnt_meals;
     int             num_meal;
     long            last_meal;
@@ -66,7 +65,7 @@ void        ft_free(t_philo *philo);
 int         Is_dead(t_philo *philo);
 int         monitor_state_philo(t_philo *philo);
 int         Lets_Go_Threads(t_philo *philo);
-int         initialize_philos(t_philo **philo);
+int         initialize_philos(t_philo *philo);
 void        *routine_Multi_thread(void *arg);
 // void         _routine(t_philo *philo);
 void         _sleeping(t_philo *philo);
