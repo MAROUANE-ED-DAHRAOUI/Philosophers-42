@@ -51,9 +51,11 @@ void _eating(t_philo *philo)
     pthread_mutex_lock((philo->right_fork));
     print_moves(philo, "has taken a fork");
     print_moves(philo, "Is_eating");
-    pthread_mutex_lock(&(philo->mutex_time));
+    // pthread_mutex_lock(&(philo->mutex_time));
+    pthread_mutex_lock(&philo->meal_mutex);
     philo->last_meal = get_current_time_ms();
-    pthread_mutex_unlock(&(philo->mutex_time));
+    pthread_mutex_unlock(&philo->meal_mutex);
+    // pthread_mutex_unlock(&(philo->mutex_time));
     sleep_philo(philo->info->t_to_eat);
     pthread_mutex_lock(&philo->lock_meal);
     philo->num_meal+=1;

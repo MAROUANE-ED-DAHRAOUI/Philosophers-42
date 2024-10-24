@@ -63,42 +63,37 @@ int initialize_philos(t_philo *philo)
 //     pthread_mutex_unlock(&(*philo)->info->dead_lock);
 // }
 
-static int state_philos(t_philo *philo, int i)
+int state_philos(t_philo *philo)
 {
-    pthread_mutex_lock(&philo->lock_meal);
-    pthread_mutex_unlock(&philo->mutex_time);
-    pthread_mutex_unlock(&philo->info->dead_lock);
-    // pthread_mutex_lock(&philo->mutex);
-    if((get_current_time_ms() - philo->last_meal) >= philo->info->t_to_die)
-    {
-        philo->info->dead_id = philo->info->philos[i].id;
-        philo->info->_exit = false;
-        // pthread_mutex_unlock(&philo->mutex);
-        pthread_mutex_unlock(&(philo)->lock_meal);
-        pthread_mutex_unlock(&(philo)->mutex_time);
-        pthread_mutex_unlock(&(philo)->info->dead_lock);
+    long last_meal;
+    pthread_mutex_lock(&philo->meal_mutex);  // Lock
+    last_meal = philo->last_meal;
+    pthread_mutex_unlock(&philo->meal_mutex);  // Unlock
+
+    if ((get_current_time_ms() - last_meal) >= philo->info->t_to_die) {
         return 0;
     }
-    pthread_mutex_unlock(&(philo)->lock_meal);
-    pthread_mutex_unlock(&(philo)->mutex_time);
-    pthread_mutex_unlock(&(philo)->info->dead_lock);
-    return (1);
+    return 1;  // Philosopher is alive
 }
 
-int monitor_state_philo(t_philo *philo) {
+
+int monitor_state_philo(t_philo *philo)
+{
     int i;
     int max_meals;
+    t_philo *current_philo;
 
-    while (1) {
+    while (1)
+    {
         max_meals = INT_MAX;
         i = -1;
-
         // Check each philosopher's state
-        while (++i < philo->info->num_of_philo) {
-            t_philo *current_philo = &philo->info->philos[i];
-
+        while (++i < philo->info->num_of_philo)
+        {
+            current_philo = &philo->info->philos[i];
             // Check if a philosopher is dead
-            if (state_philos(current_philo, i) == 0) {
+            if (state_philos(current_philo) == 0)
+            {
                 printf("%ld %d is dead\n", 
                        get_current_time_ms() - philo->t_start, 
                        current_philo->id);
@@ -114,8 +109,8 @@ int monitor_state_philo(t_philo *philo) {
 
         // If all philosophers have reached the meal limit, stop the simulation
         if (philo->info->limit_meals != -1 && max_meals >= philo->info->limit_meals) {
-            printf("All philosophers have finished eating.\n");
-            return 0;
+            // printf("All philosophers have finished eating.\n");
+            return (0);
         }
 
         usleep(500);  // Add a small delay to avoid busy-waiting
@@ -124,9 +119,11 @@ int monitor_state_philo(t_philo *philo) {
 }
 
 
-int Lets_Go_Threads(t_philo *philo) {
-    int i = -1;
+int Lets_Go_Threads(t_philo *philo)
+{
+    int i;
 
+    i = -1;
     // Start monitoring the philosophers
     if (monitor_state_philo(philo) == 0) {
         philo->info->_exit = false;

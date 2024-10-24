@@ -28,6 +28,7 @@ int init_several_mtx(t_philo *philo)
     while(i < philo->info->num_of_philo)
     {
         pthread_mutex_init(&(philo->info->forks[i]), NULL);
+        pthread_mutex_init(&philo[i].meal_mutex, NULL);
         i++;
     }
     pthread_mutex_init(&(philo->info->prt_lock), NULL);

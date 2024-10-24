@@ -26,6 +26,7 @@ void ft_free(t_philo *philo)
        pthread_mutex_destroy(&philo->info->forks[i]);
        pthread_mutex_destroy(&philo->info->philos[i].lock_meal);
        pthread_mutex_destroy(&philo->info->philos[i].mutex_time);
+       pthread_mutex_destroy(&philo[i].meal_mutex);
        i++;
     }
     pthread_mutex_destroy(&philo->info->prt_lock);
@@ -181,10 +182,12 @@ int main(int ac, char **av)
             return (0);
         if(Lets_Go_Threads(&philo) == 0)
         {
-            write_error("Thread creation failed");
+            // write_error("Thread creation failed");
              if (philo.info != NULL)
-                    free(philo.info);
+             {
+                free(philo.info);
                 return (0);
+            }
         }
     }
     else
