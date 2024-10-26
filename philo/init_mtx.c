@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 17:58:04 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/26 01:21:20 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/26 17:08:19 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,14 @@ int init_several_mtx(t_philo *philo)
 /*
  -----> Function to check if a philosopher is dead by
         inspecting the shared `dead_philo` variable with proper mutex locking.
-*/
+*/  
 int Is_dead(t_philo *philo)
 {
-    long time = get_current_time_ms();
-    
+    long long _time;
+
+    _time = get_current_time_ms();
     pthread_mutex_lock(&philo->meal_mutex);  // Lock access to last_meal
-    if ((time - philo->last_meal) >= philo->info->t_to_die)
+    if ((_time - philo->last_meal) >= philo->info->t_to_die)
     {
         philo->info->dead_philo = philo->id;
         philo->info->_exit = false;

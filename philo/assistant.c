@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/26 04:39:33 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/26 06:54:22 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,9 +115,9 @@ int monitor_state_philo(t_philo *philo)
         if (finished_philosophers == philo->info->num_of_philo)
         {
             // pthread_mutex_lock(&(philo->info->prt_lock));
-            // printf(BLUE"All philosophers have finished eating.\n" NC);
+            // print_moves(philo, "All philosophers have eaten enough meals");
             // pthread_mutex_unlock(&(philo->info->prt_lock));
-            return (0);
+            return (0); 
         }
         usleep(500);
     }
@@ -129,12 +129,12 @@ int Lets_Go_Threads(t_philo *philo)
 
     i = 0;
    if(monitor_state_philo(philo) == 0)
-        return 0;
+        return (0);
     while (i < philo->info->num_of_philo)
     {
         pthread_join(philo->info->philos[i].threads, NULL);
         i++;
     }
-    return 1;
+    return (1);
 }
 
