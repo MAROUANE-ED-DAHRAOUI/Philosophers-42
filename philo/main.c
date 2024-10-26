@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/23 16:45:05 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/26 02:03:24 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,13 +151,19 @@ int check_args(t_philo *philo, int ac, char **av)
 // Function to allocate memory for philosopher threads and forks. Also initializes mutexes.
 int allocate_memory(t_philo *philo, char **av)
 {
-    philo->info->forks = malloc(sizeof(pthread_mutex_t) * ft_atoi(av[1]));
-    if(philo->info->forks == NULL)
+    int num_philos = ft_atoi(av[1]);
+    philo->info->forks = malloc(sizeof(pthread_mutex_t) * num_philos);
+    if (philo->info->forks == NULL) {
+        fprintf(stderr, "Error: Memory allocation for forks failed\n");
         return 0;
-    philo->info->philos = malloc(sizeof(t_philo) * ft_atoi(av[1]));
-    if(philo->info->philos == NULL)
+    }
+    philo->info->philos = malloc(sizeof(t_philo) * num_philos);
+    if (philo->info->philos == NULL) {
+        fprintf(stderr, "Error: Memory allocation for philos failed\n");
+        free(philo->info->forks); // Free previously allocated memory
         return 0;
-    return (1);
+    }
+    return 1;
 }
 
 // Main function: Entry point of the philosopher simulation. Manages argument checking, memory allocation, and thread creation.
@@ -165,40 +171,25 @@ int main(int ac, char **av)
 {
     t_philo philo;
 
-    philo.info = NULL;
     if (ac != 5 && ac != 6)
-        return (write_error("Wrong amount of arguments"));
+        return write_error("Wrong number of arguments");
+
     philo.info = malloc(sizeof(t_info));
     if (philo.info == NULL)
+        return write_error("Memory allocation failed");
+
+    if (!check_args(&philo, ac, av))
     {
-        write_error("Memory allocation failed");
         free(philo.info);
-        return (0);
+        return write_error("Invalid arguments");
     }
-        
-    if (check_args(&philo, ac, av))
-    {   
-        if (initialize_philos(&philo) == 0)
-            return (0);
-        if(Lets_Go_Threads(&philo) == 0)
-        {
-            // write_error("Thread creation failed");
-             if (philo.info != NULL)
-             {
-                free(philo.info);
-                return (0);
-            }
-        }
-    }
-    else
-    {
-        write_error("Invalid arguments");
-         if (philo.info != NULL)
-                free(philo.info);
-        return (0);
-    }
-    if(philo.info != NULL)
+
+    if (!initialize_philos(&philo)) {
         free(philo.info);
-    ft_free(&philo);
-    return (0);
+        return 0;
+    }
+    Lets_Go_Threads(&philo);
+    free(philo.info);
+    return 0;
 }
+
