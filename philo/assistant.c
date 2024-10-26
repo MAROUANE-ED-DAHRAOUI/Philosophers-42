@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/26 04:29:53 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/26 04:39:33 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,51 +80,60 @@ int state_philos(t_philo *philo)
 int monitor_state_philo(t_philo *philo)
 {
     int i;
-    int all_philos_done;
+    int finished_philosophers = 0;
 
     while (1)
     {
-        all_philos_done = 1;  // Assume all philosophers have finished eating
-
+        finished_philosophers = 0;  // Reset for every check cycle
         i = 0;
         while (i < philo->info->num_of_philo)
         {
             t_philo *current_philo = &philo->info->philos[i];
 
-            // Check if a philosopher is dead
+            // Check if the philosopher is dead
             if (state_philos(current_philo) == 0)
             {
                 pthread_mutex_lock(&(philo->info->prt_lock));
-                printf(RED "%lld %d is dead\n" NC,
-                       get_current_time_ms() - philo->t_start,
+                printf(RED "%lld %d is dead\n" NC, 
+                       get_current_time_ms() - philo->t_start, 
                        current_philo->id);
                 pthread_mutex_unlock(&(philo->info->prt_lock));
-                return 0;  // Stop simulation if any philosopher dies
+                return 0;  // Exit if a philosopher dies
             }
 
-            // Check if philosopher has not reached the meal limit
+            // Check if the philosopher has reached the required meal count
             pthread_mutex_lock(&current_philo->lock_meal);
-            if (philo->info->limit_meals != -1 && current_philo->num_meal < philo->info->limit_meals)
-                all_philos_done = 0;  // At least one philosopher hasn't finished
+            if (philo->info->limit_meals != -1 && 
+                current_philo->num_meal >= philo->info->limit_meals)
+            {
+                finished_philosophers++;  // Increment for every philosopher who is done
+            }
             pthread_mutex_unlock(&current_philo->lock_meal);
-
             i++;
         }
-
-        // If all philosophers have eaten the required number of times, stop the simulation
-        if (philo->info->limit_meals != -1 && all_philos_done)
-            return 0;
-
-        usleep(500);  // Small delay to avoid busy-waiting
+        // If all philosophers have eaten the required number of times, exit
+        if (finished_philosophers == philo->info->num_of_philo)
+        {
+            // pthread_mutex_lock(&(philo->info->prt_lock));
+            // printf(BLUE"All philosophers have finished eating.\n" NC);
+            // pthread_mutex_unlock(&(philo->info->prt_lock));
+            return (0);
+        }
+        usleep(500);
     }
 }
 
 int Lets_Go_Threads(t_philo *philo)
 {
-    monitor_state_philo(philo);  // Monitor philosophers
-    for (int i = 0; i < philo->info->num_of_philo; i++)
+    int i;
+
+    i = 0;
+   if(monitor_state_philo(philo) == 0)
+        return 0;
+    while (i < philo->info->num_of_philo)
     {
-        pthread_join(philo->info->philos[i].threads, NULL);  // Wait for threads to finish
+        pthread_join(philo->info->philos[i].threads, NULL);
+        i++;
     }
     return 1;
 }
