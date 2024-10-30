@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/28 13:45:40 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/30 12:22:06 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,23 @@ void ft_free(t_philo *philo)
 {
     int i;
 
+    if (!philo || !philo->info)
+        return; // Added safety check
+
     i = 0;
     while(i < philo->info->num_of_philo)
     {
-       pthread_mutex_destroy(&philo->info->forks[i]);
-       pthread_mutex_destroy(&philo->info->philos[i].lock_meal);
-       pthread_mutex_destroy(&philo->info->philos[i].mutex_time);
-       pthread_mutex_destroy(&philo[i].meal_mutex);
-       pthread_mutex_destroy(&philo[i].mutex);
-       i++;
+        pthread_mutex_destroy(&philo->info->forks[i]);
+        pthread_mutex_destroy(&philo->info->philos[i].lock_meal);
+        pthread_mutex_destroy(&philo->info->philos[i].mutex_time);
+        pthread_mutex_destroy(&philo->info->philos[i].mutex);
+        i++;
     }
     pthread_mutex_destroy(&philo->info->prt_lock);
     pthread_mutex_destroy(&philo->info->philo_dead);
     free(philo->info->forks);
     free(philo->info->philos);
-    // free(philo->info);
+    free(philo->info); // Also free the info structure
 }
 
 // Function to print an error message to the console and return an error code (1).

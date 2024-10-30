@@ -16,13 +16,12 @@ void     _thinking(t_philo *philo)
 void print_moves(t_philo *philo, char *str)
 {
     pthread_mutex_lock(&(philo->info->prt_lock));
-    if (Is_dead(philo) == 0)
+    if (!Is_dead(philo))
     {
         philo->info->_exit = false;
         pthread_mutex_unlock(&(philo->info->prt_lock));
         return ;
     }
-    // printf("philo time %lld\n%lld\n", get_current_time_ms(), philo->t_start);
     printf(BLUE "%lld %d %s\n" NC, 
            get_current_time_ms() - philo->t_start, 
            philo->id, str);
@@ -35,20 +34,23 @@ int One_thread(t_philo *philo)
     {
         pthread_mutex_lock(philo->left_fork);
         print_moves(philo, "has taken a fork");
-        sleep_philo(philo->info->t_to_die);
+        usleep(philo->info->t_to_die * 1000); // Use usleep instead of sleep for better granularity
         print_moves(philo, "died");
         pthread_mutex_unlock(philo->left_fork);
+        ft_free(philo); // Free memory before exiting
         return 0;
     }
     return 1;
 }
+
 
 void _eating(t_philo *philo)
 {
     if (Is_dead(philo) == 0 || One_thread(philo) == 0)
         return;
 
-    if (philo->id % 2 == 0) {
+    if (philo->id % 2 == 0)
+    {
         pthread_mutex_lock(philo->left_fork);
         print_moves(philo, "has taken a fork");
         pthread_mutex_lock(philo->right_fork);
@@ -76,7 +78,6 @@ void _eating(t_philo *philo)
     pthread_mutex_unlock(philo->left_fork);
     pthread_mutex_unlock(philo->right_fork);
 }
-
 
 void     _sleeping(t_philo *philo)
 {

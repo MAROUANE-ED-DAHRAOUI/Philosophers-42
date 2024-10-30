@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/30 11:59:02 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/30 12:22:28 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,13 +65,12 @@ int state_philos(t_philo *philo)
 int monitor_state_philo(t_philo *philo)
 {
     int i;
-    int finished_philosophers = 0;
+    int finished_philosophers;
 
     while (1)
     {
         finished_philosophers = 0;  // Reset for every check cycle
-        i = 0;
-        while (i < philo->info->num_of_philo)
+        for (i = 0; i < philo->info->num_of_philo; i++)
         {
             t_philo *current_philo = &philo->info->philos[i];
 
@@ -83,6 +82,7 @@ int monitor_state_philo(t_philo *philo)
                        get_current_time_ms() - philo->t_start, 
                        current_philo->id);
                 pthread_mutex_unlock(&(philo->info->prt_lock));
+                ft_free(philo); // Free memory before returning
                 return 0;  // Exit if a philosopher dies
             }
 
@@ -94,14 +94,14 @@ int monitor_state_philo(t_philo *philo)
                 finished_philosophers++;  // Increment for every philosopher who is done
             }
             pthread_mutex_unlock(&current_philo->lock_meal);
-            i++;
         }
-       if (finished_philosophers == philo->info->num_of_philo)
-       {
+        
+        if (finished_philosophers == philo->info->num_of_philo)
+        {
             pthread_mutex_lock(&philo->info->prt_lock);
             printf("All philosophers have finished eating\n");
             pthread_mutex_unlock(&philo->info->prt_lock);
-            ft_free(philo);
+            ft_free(philo); // Free memory before returning
             return 0;
         }
         usleep(500);

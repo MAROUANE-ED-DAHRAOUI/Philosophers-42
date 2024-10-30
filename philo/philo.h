@@ -63,7 +63,7 @@ int         allocate_memory(t_philo *philo, char **av);
 int         valide_args(int ac, char **av);
 int         Is_success(char *str);
 void        ft_free(t_philo *philo);
-int         Is_dead(t_philo *philo);
+bool         Is_dead(t_philo *philo);
 int         monitor_state_philo(t_philo *philo);
 int         Lets_Go_Threads(t_philo *philo);
 int         initialize_philos(t_philo *philo);
