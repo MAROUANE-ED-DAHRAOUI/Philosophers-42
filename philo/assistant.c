@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/26 06:54:22 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/30 11:59:02 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,20 +50,6 @@ int initialize_philos(t_philo *philo)
     return 1;
 }
 
-// void looking_mutex(t_philo **philo)
-// {
-//     pthread_mutex_lock(&(*philo)->lock_meal);
-//     pthread_mutex_unlock(&(*philo)->mutex_time);
-//     pthread_mutex_unlock(&(*philo)->info->dead_lock);
-// }
-
-// void unlocking_mutex(t_philo **philo)
-// {
-//     pthread_mutex_unlock(&(*philo)->lock_meal);
-//     pthread_mutex_unlock(&(*philo)->mutex_time);
-//     pthread_mutex_unlock(&(*philo)->info->dead_lock);
-// }
-
 int state_philos(t_philo *philo)
 {
     long last_meal;
@@ -73,9 +59,8 @@ int state_philos(t_philo *philo)
     if ((get_current_time_ms() - last_meal) >= philo->info->t_to_die) {
         return 0;
     }
-    return 1;  // Philosopher is alive
+    return 1;
 }
-
 
 int monitor_state_philo(t_philo *philo)
 {
@@ -111,13 +96,13 @@ int monitor_state_philo(t_philo *philo)
             pthread_mutex_unlock(&current_philo->lock_meal);
             i++;
         }
-        // If all philosophers have eaten the required number of times, exit
-        if (finished_philosophers == philo->info->num_of_philo)
-        {
-            // pthread_mutex_lock(&(philo->info->prt_lock));
-            // print_moves(philo, "All philosophers have eaten enough meals");
-            // pthread_mutex_unlock(&(philo->info->prt_lock));
-            return (0); 
+       if (finished_philosophers == philo->info->num_of_philo)
+       {
+            pthread_mutex_lock(&philo->info->prt_lock);
+            printf("All philosophers have finished eating\n");
+            pthread_mutex_unlock(&philo->info->prt_lock);
+            ft_free(philo);
+            return 0;
         }
         usleep(500);
     }
@@ -128,7 +113,7 @@ int Lets_Go_Threads(t_philo *philo)
     int i;
 
     i = 0;
-   if(monitor_state_philo(philo) == 0)
+    if(monitor_state_philo(philo) == 0)
         return (0);
     while (i < philo->info->num_of_philo)
     {

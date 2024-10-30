@@ -29,16 +29,15 @@ void print_moves(t_philo *philo, char *str)
     pthread_mutex_unlock(&(philo->info->prt_lock));  // Unlock after printing
 }
 
-
-
-int     One_thread(t_philo *philo)
+int One_thread(t_philo *philo)
 {
-    if(philo->left_fork == philo->right_fork)
+    if (philo->info->num_of_philo == 1)
     {
-        pthread_mutex_lock((philo->left_fork));
+        pthread_mutex_lock(philo->left_fork);
         print_moves(philo, "has taken a fork");
-        philo->info->_exit = false;
-        pthread_mutex_unlock((philo->left_fork));
+        sleep_philo(philo->info->t_to_die);
+        print_moves(philo, "died");
+        pthread_mutex_unlock(philo->left_fork);
         return 0;
     }
     return 1;
@@ -49,34 +48,35 @@ void _eating(t_philo *philo)
     if (Is_dead(philo) == 0 || One_thread(philo) == 0)
         return;
 
-    pthread_mutex_lock(philo->left_fork);  // Lock left fork
-    print_moves(philo, "has taken a fork");
-    pthread_mutex_lock(philo->right_fork);  // Lock right fork
-    print_moves(philo, "has taken a fork");
-    print_moves(philo, "is eating"); 
+    if (philo->id % 2 == 0) {
+        pthread_mutex_lock(philo->left_fork);
+        print_moves(philo, "has taken a fork");
+        pthread_mutex_lock(philo->right_fork);
+        print_moves(philo, "has taken a fork");
+    } 
+    else
+    {
+        pthread_mutex_lock(philo->right_fork);
+        print_moves(philo, "has taken a fork");
+        pthread_mutex_lock(philo->left_fork);
+        print_moves(philo, "has taken a fork");
+    }
 
+    print_moves(philo, "is eating");
     pthread_mutex_lock(&philo->mutex_time);
     philo->last_meal = get_current_time_ms();
     pthread_mutex_unlock(&philo->mutex_time);
 
-    pthread_mutex_lock(&philo->lock_meal);  // Lock before modifying num_meal
-    philo->num_meal++;  // Increment meal count safely
-    pthread_mutex_unlock(&philo->lock_meal);  // Unlock after modifying num_meal
+    pthread_mutex_lock(&philo->lock_meal);
+    philo->num_meal++;
+    pthread_mutex_unlock(&philo->lock_meal);
 
     sleep_philo(philo->info->t_to_eat);
 
-    pthread_mutex_unlock(philo->left_fork);  // Release forks
-    pthread_mutex_unlock(philo->right_fork);
-}
-
-
-
-int     unlocking_forks(t_philo *philo)
-{
     pthread_mutex_unlock(philo->left_fork);
     pthread_mutex_unlock(philo->right_fork);
-    return (1);
 }
+
 
 void     _sleeping(t_philo *philo)
 {
@@ -103,6 +103,7 @@ void    *routine_Multi_thread(void *arg)
         if(Is_dead(philo) == 0)
         {
             philo->info->_exit = false;
+            ft_free(philo);
             break ;
         }
         _thinking(philo);

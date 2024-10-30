@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 17:58:04 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/26 17:08:19 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/29 14:33:23 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,16 +42,19 @@ int Is_dead(t_philo *philo)
     long long _time;
 
     _time = get_current_time_ms();
-    pthread_mutex_lock(&philo->meal_mutex);  // Lock access to last_meal
+    pthread_mutex_lock(&philo->meal_mutex);
     if ((_time - philo->last_meal) >= philo->info->t_to_die)
     {
+        pthread_mutex_lock(&philo->mutex_time);
         philo->info->dead_philo = philo->id;
+        pthread_mutex_unlock(&philo->mutex_time);
         philo->info->_exit = false;
         pthread_mutex_unlock(&philo->meal_mutex);
-        return 0;  // Philosopher is dead
+        ft_free(philo);
+        return 0;
     }
     pthread_mutex_unlock(&philo->meal_mutex);
-    return 1;  // Philosopher is alive
+    return 1;
 }
 
 

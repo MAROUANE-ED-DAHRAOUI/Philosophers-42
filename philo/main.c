@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/26 04:38:36 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/10/28 13:45:40 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ void ft_free(t_philo *philo)
        pthread_mutex_destroy(&philo->info->philos[i].lock_meal);
        pthread_mutex_destroy(&philo->info->philos[i].mutex_time);
        pthread_mutex_destroy(&philo[i].meal_mutex);
+       pthread_mutex_destroy(&philo[i].mutex);
        i++;
     }
     pthread_mutex_destroy(&philo->info->prt_lock);
