@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/10/30 12:22:06 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/03 22:59:44 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ void ft_free(t_philo *philo)
     int i;
 
     if (!philo || !philo->info)
-        return; // Added safety check
-
+        return;
     i = 0;
     while(i < philo->info->num_of_philo)
     {
@@ -36,7 +35,7 @@ void ft_free(t_philo *philo)
     pthread_mutex_destroy(&philo->info->philo_dead);
     free(philo->info->forks);
     free(philo->info->philos);
-    free(philo->info); // Also free the info structure
+    free(philo->info);
 }
 
 // Function to print an error message to the console and return an error code (1).
@@ -76,6 +75,8 @@ int init_philo(t_philo *philo, char **av)
     philo->id = -1;
     philo->info->_exit = true;
     philo->info->dead_id = -1;
+    philo->info->stop_simulation = false;
+    philo->info->dead_philo = 0;
     if(av[5] != NULL)
         philo->info->limit_meals = ft_atoi(av[5]);
     else
@@ -151,19 +152,19 @@ int check_args(t_philo *philo, int ac, char **av)
     return (0);
 }
 
-// Function to allocate memory for philosopher threads and forks. Also initializes mutexes.
 int allocate_memory(t_philo *philo, char **av)
 {
     int num_philos = ft_atoi(av[1]);
     philo->info->forks = malloc(sizeof(pthread_mutex_t) * num_philos);
-    if (philo->info->forks == NULL) {
+    if (philo->info->forks == NULL)
+    {
         fprintf(stderr, "Error: Memory allocation for forks failed\n");
         return 0;
     }
     philo->info->philos = malloc(sizeof(t_philo) * num_philos);
     if (philo->info->philos == NULL) {
         fprintf(stderr, "Error: Memory allocation for philos failed\n");
-        free(philo->info->forks); // Free previously allocated memory
+        free(philo->info->forks);
         return 0;
     }
     return 1;
@@ -174,12 +175,13 @@ int main(int ac, char **av)
 {
     t_philo philo;
 
+
     if (ac != 5 && ac != 6)
         return write_error("Wrong number of arguments");
 
     philo.info = malloc(sizeof(t_info));
     if (philo.info == NULL)
-        return write_error("Memory allocation failed");
+         return write_error("Memory allocation failed");
 
     if (!check_args(&philo, ac, av))
     {
@@ -187,11 +189,13 @@ int main(int ac, char **av)
         return write_error("Invalid arguments");
     }
 
-    if (!initialize_philos(&philo)) {
+    if (!initialize_philos(&philo))
+    {
         free(philo.info);
         return 0;
     }
-    if(Lets_Go_Threads(&philo) == 0)
+    // philo.info->stop_simulation = true;
+    if(!Lets_Go_Threads(&philo))
     {
         ft_free(&philo);
         return 0;

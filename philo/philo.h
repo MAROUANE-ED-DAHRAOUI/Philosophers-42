@@ -42,7 +42,9 @@ typedef struct s_info{
     int             dead_philo;
     int             cnt_meals;
     bool            _exit;
+    bool            stop_simulation;
     int             limit_meals ;
+    pthread_mutex_t stop_lock;
     pthread_mutex_t *forks;
     pthread_mutex_t prt_lock;
     pthread_mutex_t dead_lock;
@@ -69,7 +71,6 @@ int         Lets_Go_Threads(t_philo *philo);
 int         initialize_philos(t_philo *philo);
 void        *routine_Multi_thread(void *arg);
 void         _sleeping(t_philo *philo);
-int         unlocking_forks(t_philo *philo);
 void        print_moves(t_philo *philo, char *str);
 void         _eating(t_philo *philo);
 void        _thinking(t_philo *philo);
