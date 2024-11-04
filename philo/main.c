@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/04 12:48:16 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/04 20:28:07 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,6 @@ void ft_free(t_philo *philo)
     }
     pthread_mutex_destroy(&philo->info->prt_lock);
     pthread_mutex_destroy(&philo->info->philo_dead);
-    // free(philo->info->forks);
-    // free(philo->info->philos);
-    // free(philo->info);
 }
 
 // Function to print an error message to the console and return an error code (1).
@@ -182,7 +179,6 @@ void create_threads(t_philo *philo)
             ft_free(philo);
             return ;
         }
-        // pthread_join(philo->info->philos[i].threads, NULL);
         i++;
     }
 }
@@ -210,13 +206,11 @@ int main(int ac, char **av)
         return 0;
     }
     create_threads(&philo);
-    // philo.info->stop_simulation = true;
     if(!Lets_Go_Threads(&philo))
     {
         ft_free(&philo);
         return 0;
     }
-    // ft_free(&philo);
     free(philo.info);
     return 0;
 }
