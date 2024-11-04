@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/03 23:22:48 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/04 12:51:27 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,7 @@ int initialize_philos(t_philo *philo)
         philo->info->philos[i].t_start = get_current_time_ms();
         // philo->info->stop_simulation = false;
 
-        if (pthread_create(&philo->info->philos[i].threads, NULL, &routine_Multi_thread, &philo->info->philos[i]) != 0)
-        {
-            write_error("Thread creation failed");
-            return 0;
-        }
+        // pthread_create(&philo->info->philos[i].threads, NULL, &routine_Multi_thread, &philo->info->philos[i]);
         i++;
     }
     return 1;
@@ -89,6 +85,15 @@ int monitor_state_philo(t_philo *philo)
             // Check if the philosopher is dead
             if (state_philos(current_philo) == 0)
             {
+                // if(Is_dead(philo) == 0)
+                // {
+                //     ft_free(philo);
+                //     return 0;
+                // }
+                pthread_mutex_lock(&(philo->info->stop_lock));
+                philo->info->_exit = false;
+                pthread_mutex_unlock(&(philo->info->stop_lock));
+
                 pthread_mutex_lock(&(philo->info->prt_lock));
                 printf(RED "%lld %d is dead\n" NC, 
                        get_current_time_ms() - philo->t_start, 
@@ -115,7 +120,7 @@ int monitor_state_philo(t_philo *philo)
                 ft_free(philo);
                 return (0);
             }
-            printf("All philosophers have finished eating\n");
+            // printf("All philosophers have finished eating\n");
             stop_all_philosophers(philo->info);
             for (int i = 0; i < philo->info->num_of_philo; i++) {
             pthread_join(philo->info->philos[i].threads, NULL);
@@ -132,15 +137,24 @@ int Lets_Go_Threads(t_philo *philo)
     int i;
 
     i = 0;
+    // printf("joining...\n");
+    //  while (i < philo->info->num_of_philo && philo->info->num_of_philo > 1)
+    // {
+    //     // printf("joining...\n");
+    //     pthread_join(philo->info->philos[i].threads, NULL);
+    //     i++;
+    // }
     if(!monitor_state_philo(philo))
     {
         if(philo != NULL)
             ft_free(philo);
 
-        return (0);
+        // return (0);
     }
-    while (i < philo->info->num_of_philo && philo->info->num_of_philo > 1)
+    printf("joining...\n");
+     while (i < philo->info->num_of_philo && philo->info->num_of_philo > 1)
     {
+        // printf("joining...\n");
         pthread_join(philo->info->philos[i].threads, NULL);
         i++;
     }

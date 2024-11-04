@@ -77,5 +77,6 @@ void        _thinking(t_philo *philo);
 int         One_thread(t_philo *philo);
 void        sleep_philo(int time);
 int         One_thread(t_philo *philo);
+void        stop_all_philosophers(t_info *info);
 
 #endif

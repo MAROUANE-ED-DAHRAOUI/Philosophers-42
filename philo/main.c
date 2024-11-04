@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/03 22:59:44 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/04 12:48:16 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 */
 void ft_free(t_philo *philo)
 {
+    (void)philo;
     int i;
 
     if (!philo || !philo->info)
@@ -33,9 +34,9 @@ void ft_free(t_philo *philo)
     }
     pthread_mutex_destroy(&philo->info->prt_lock);
     pthread_mutex_destroy(&philo->info->philo_dead);
-    free(philo->info->forks);
-    free(philo->info->philos);
-    free(philo->info);
+    // free(philo->info->forks);
+    // free(philo->info->philos);
+    // free(philo->info);
 }
 
 // Function to print an error message to the console and return an error code (1).
@@ -170,11 +171,26 @@ int allocate_memory(t_philo *philo, char **av)
     return 1;
 }
 
+void create_threads(t_philo *philo)
+{
+    int i = 0;
+    while (i < philo->info->num_of_philo)
+    {
+        if(pthread_create(&philo->info->philos[i].threads, NULL, &routine_Multi_thread, &philo->info->philos[i]) != 0)
+        {
+            write_error("Thread creation failed");
+            ft_free(philo);
+            return ;
+        }
+        // pthread_join(philo->info->philos[i].threads, NULL);
+        i++;
+    }
+}
+
 // Main function: Entry point of the philosopher simulation. Manages argument checking, memory allocation, and thread creation.
 int main(int ac, char **av)
 {
     t_philo philo;
-
 
     if (ac != 5 && ac != 6)
         return write_error("Wrong number of arguments");
@@ -188,18 +204,19 @@ int main(int ac, char **av)
         free(philo.info);
         return write_error("Invalid arguments");
     }
-
     if (!initialize_philos(&philo))
     {
         free(philo.info);
         return 0;
     }
+    create_threads(&philo);
     // philo.info->stop_simulation = true;
     if(!Lets_Go_Threads(&philo))
     {
         ft_free(&philo);
         return 0;
     }
+    // ft_free(&philo);
     free(philo.info);
     return 0;
 }
