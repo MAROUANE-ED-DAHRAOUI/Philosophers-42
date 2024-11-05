@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 22:29:25 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 00:21:04 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 00:48:38 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ void	print_moves(t_philo *philo, char *str)
 
 int	One_thread(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->mutex_time);
 	if (philo->info->num_of_philo == 1)
 	{
 		pthread_mutex_lock(philo->left_fork);
@@ -42,10 +41,8 @@ int	One_thread(t_philo *philo)
 		print_moves(philo, "died");
 		pthread_mutex_unlock(philo->left_fork);
 		ft_free(philo); 
-		pthread_mutex_unlock(&philo->mutex_time);
 		return (0);
 	}
-	pthread_mutex_unlock(&philo->mutex_time);
 	return (1);
 }
 
