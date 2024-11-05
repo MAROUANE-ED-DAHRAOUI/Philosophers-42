@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 17:58:04 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/03 23:15:49 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 00:17:17 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,48 +15,45 @@
 /*
  -----> Function to initialize mutexes for forks, philosophers, and print locks.
 */
-int init_several_mtx(t_philo *philo)
+int	init_several_mtx(t_philo *philo)
 {
-    int i;
+	int	i;
 
-    i = 0;
-    while(i < philo->info->num_of_philo)
-    {
-        pthread_mutex_init(&philo->info->forks[i], NULL);
-        pthread_mutex_init(&philo->info->philos[i].meal_mutex, NULL);
-        pthread_mutex_init(&philo->info->philos[i].mutex_time, NULL);
-        pthread_mutex_init(&philo->info->philos[i].mutex, NULL);
-         pthread_mutex_init(&philo->info->stop_lock, NULL);
-        i++;
-    }
-    pthread_mutex_init(&philo->info->prt_lock, NULL);
-    pthread_mutex_init(&philo->info->philo_dead, NULL);
-    return 1;
+	i = 0;
+	while (i < philo->info->num_of_philo)
+	{
+		pthread_mutex_init(&philo->info->forks[i], NULL);
+		pthread_mutex_init(&philo->info->philos[i].mutex_time, NULL);
+		pthread_mutex_init(&philo->info->philos[i].mutex, NULL);
+		pthread_mutex_init(&philo->info->stop_lock, NULL);
+		i++;
+	}
+	pthread_mutex_init(&philo->info->prt_lock, NULL);
+	return (1);
 }
 
 /*
  -----> Function to check if a philosopher is dead by
-        inspecting the shared `dead_philo` variable with proper mutex locking.
-*/  
-bool Is_dead(t_philo *philo)
+		inspecting the shared `dead_philo` variable with proper mutex locking.
+*/
+bool	Is_dead(t_philo *philo)
 {
-    bool dead;
+	bool	dead;
 
-    pthread_mutex_lock(&philo->info->stop_lock);
-    dead = philo->info->_exit;
-    pthread_mutex_unlock(&philo->info->stop_lock);
-    return dead;
+	dead = false;
+	pthread_mutex_lock(&philo->info->stop_lock);
+	dead = philo->info->_exit;
+	pthread_mutex_unlock(&philo->info->stop_lock);
+	return (dead);
 }
 
-
-void    sleep_philo(int time)
+void	sleep_philo(int time)
 {
-    long    s_time;
+	long	s_time;
 
-    s_time = get_current_time_ms();
-    while((get_current_time_ms() - s_time) < time)
-    {
-        usleep(500);
-    }
+	s_time = get_current_time_ms();
+	while ((get_current_time_ms() - s_time) < time)
+	{
+		usleep(500);
+	}
 }
-
