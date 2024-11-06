@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 22:28:55 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 16:28:25 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 22:29:31 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ void	ft_free(t_philo *philo)
 		pthread_mutex_destroy(&philo->info->philos[i].mutex);
 		i++;
 	}
+	pthread_mutex_destroy(&philo->info->stop_lock);
 	pthread_mutex_destroy(&philo->info->prt_lock);
 }
 
@@ -86,13 +87,13 @@ int	allocate_memory(t_philo *philo, char **av)
 	philo->info->forks = malloc(sizeof(pthread_mutex_t) * num_philos);
 	if (philo->info->forks == NULL)
 	{
-		fprintf(stderr, "Error: Memory allocation for forks failed\n");
+		printf("Error: Memory allocation for forks failed\n");
 		return (0);
 	}
 	philo->info->philos = malloc(sizeof(t_philo) * num_philos);
 	if (philo->info->philos == NULL)
 	{
-		fprintf(stderr, "Error: Memory allocation for philos failed\n");
+		printf("Error: Memory allocation for philos failed\n");
 		free(philo->info->forks);
 		return (0);
 	}

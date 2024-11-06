@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 22:29:47 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 13:28:52 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 21:37:00 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,6 @@ void	stop_all_philosophers(t_info *info)
 
 void	_sleeping(t_philo *philo)
 {
-	print_moves(philo, "Is sleeping");
+	print_moves(philo, "is sleeping");
 	sleep_philo(philo->info->t_to_sleep);
 }

@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 16:43:05 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 22:52:55 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,8 @@ int	go_threads(t_philo *philo)
 	{
 		if (philo != NULL)
 			ft_free(philo);
+
+		return (0);
 	}
 	while (i < philo->info->num_of_philo && philo->info->num_of_philo > 1)
 	{

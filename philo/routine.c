@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 22:29:25 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 16:43:25 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 22:52:07 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	_thinking(t_philo *philo)
 {
-	print_moves(philo, "Is thinking");
+	print_moves(philo, "is thinking");
 }
 
 void	print_moves(t_philo *philo, char *str)

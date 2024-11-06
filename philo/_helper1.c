@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 15:20:09 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 16:25:18 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 22:11:43 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	check_philosopher_state(t_philo *philo, t_philo *current_philo)
 		philo->info->_exit = false;
 		pthread_mutex_unlock(&(philo->info->stop_lock));
 		pthread_mutex_lock(&(philo->info->prt_lock));
-		printf(RED "%lld %d is dead\n" NC, get_current_time_ms()
+		printf(RED "%lld %d died\n" NC, get_current_time_ms()
 			- philo->t_start, current_philo->id);
 		pthread_mutex_unlock(&(philo->info->prt_lock));
 		ft_free(philo);

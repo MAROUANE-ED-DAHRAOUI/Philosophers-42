@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 16:31:40 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 22:25:37 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,10 +121,17 @@ int	check_args(t_philo *philo, int ac, char **av)
  * av An array of strings representing the command line arguments.
  *  Returns 0 upon successful execution.
  */
+
+void check_leaks(void)
+{
+	system("leaks philo");
+}
+
 int	main(int ac, char **av)
 {
 	t_philo	philo;
 
+	atexit(check_leaks);
 	if (ac != 5 && ac != 6)
 		return (write_error("Wrong number of arguments"));
 	philo.info = malloc(sizeof(t_info));
@@ -144,6 +151,7 @@ int	main(int ac, char **av)
 	if (!go_threads(&philo))
 	{
 		ft_free(&philo);
+		// free(philo.info);
 		return (0);
 	}
 	free(philo.info);
