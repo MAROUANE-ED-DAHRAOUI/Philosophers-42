@@ -6,13 +6,11 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 22:29:25 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 00:48:38 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:27:41 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	sleep_philo(int time_to_sleep);
 
 void	_thinking(t_philo *philo)
 {
@@ -21,7 +19,7 @@ void	_thinking(t_philo *philo)
 
 void	print_moves(t_philo *philo, char *str)
 {
-	if (Is_dead(philo))
+	if (is_dead(philo))
 	{
 		pthread_mutex_lock(&(philo->info->prt_lock));
 		printf(BLUE "%lld %d %s\n" NC, get_current_time_ms() - philo->t_start,
@@ -31,7 +29,7 @@ void	print_moves(t_philo *philo, char *str)
 	}
 }
 
-int	One_thread(t_philo *philo)
+int	one_thread(t_philo *philo)
 {
 	if (philo->info->num_of_philo == 1)
 	{
@@ -48,7 +46,7 @@ int	One_thread(t_philo *philo)
 
 void	_eating(t_philo *philo)
 {
-	if (Is_dead(philo) == 0)
+	if (is_dead(philo) == 0)
 	{
 		write_error("Error in the simulation");
 		return ;
@@ -69,13 +67,7 @@ void	_eating(t_philo *philo)
 	pthread_mutex_unlock(philo->right_fork);
 }
 
-void	_sleeping(t_philo *philo)
-{
-	print_moves(philo, "Is sleeping");
-	sleep_philo(philo->info->t_to_sleep);
-}
-
-void	*routine_Multi_thread(void *arg)
+void	*routine_multi_thread(void *arg)
 {
 	t_philo	*philo;
 	t_info	*info;
@@ -93,7 +85,7 @@ void	*routine_Multi_thread(void *arg)
 			return (NULL);
 		}
 		pthread_mutex_unlock(&info->stop_lock);
-		if (Is_dead(philo) == 0)
+		if (is_dead(philo) == 0)
 		{
 			return (NULL);
 		}

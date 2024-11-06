@@ -6,12 +6,11 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/05 23:37:55 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 00:51:34 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
 
 /*
 	* Function to initialize philosopher information, including start

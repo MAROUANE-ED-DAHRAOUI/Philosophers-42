@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 17:58:04 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 00:17:17 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 12:36:31 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	init_several_mtx(t_philo *philo)
  -----> Function to check if a philosopher is dead by
 		inspecting the shared `dead_philo` variable with proper mutex locking.
 */
-bool	Is_dead(t_philo *philo)
+bool	is_dead(t_philo *philo)
 {
 	bool	dead;
 

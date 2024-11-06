@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 22:29:03 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/05 22:34:40 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:26:10 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,18 +72,18 @@ int						allocate_memory(t_philo *philo, char **av);
 int						valide_args(int ac, char **av);
 int						is_success(char *str);
 void					ft_free(t_philo *philo);
-bool					Is_dead(t_philo *philo);
+bool					is_dead(t_philo *philo);
 int						monitor_state_philo(t_philo *philo);
 int						go_threads(t_philo *philo);
 int						initialize_philos(t_philo *philo);
-void					*routine_Multi_thread(void *arg);
+void					*routine_multi_thread(void *arg);
 void					_sleeping(t_philo *philo);
 void					print_moves(t_philo *philo, char *str);
 void					_eating(t_philo *philo);
 void					_thinking(t_philo *philo);
-int						One_thread(t_philo *philo);
+int						one_thread(t_philo *philo);
 void					sleep_philo(int time);
-int						One_thread(t_philo *philo);
+int						one_thread(t_philo *philo);
 void					stop_all_philosophers(t_info *info);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 22:29:47 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/05 22:29:49 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:28:52 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,18 @@ int	ft_atoi(const char *str)
 		i++;
 	}
 	return (rlt * nega);
+}
+
+// Function to set the stop_simulation flag
+void	stop_all_philosophers(t_info *info)
+{
+	pthread_mutex_lock(&info->stop_lock);
+	info->stop_simulation = true;
+	pthread_mutex_unlock(&info->stop_lock);
+}
+
+void	_sleeping(t_philo *philo)
+{
+	print_moves(philo, "Is sleeping");
+	sleep_philo(philo->info->t_to_sleep);
 }

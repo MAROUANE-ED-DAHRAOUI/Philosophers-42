@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/05 21:41:31 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 12:36:31 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,6 @@ int	state_philos(t_philo *philo)
 	return (1);
 }
 
-// Function to set the stop_simulation flag
-void	stop_all_philosophers(t_info *info)
-{
-	pthread_mutex_lock(&info->stop_lock);
-	info->stop_simulation = true;
-	pthread_mutex_unlock(&info->stop_lock);
-}
-
 int	monitor_state_philo(t_philo *philo)
 {
 	int		i;
@@ -105,7 +97,7 @@ int	monitor_state_philo(t_philo *philo)
 		}
 		if (finished_philosophers == philo->info->num_of_philo)
 		{
-			if (Is_dead(philo) == 0)
+			if (is_dead(philo) == 0)
 			{
 				ft_free(philo);
 				return (0);

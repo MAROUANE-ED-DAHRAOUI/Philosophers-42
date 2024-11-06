@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 22:28:55 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/05 22:33:25 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:26:10 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	create_threads(t_philo *philo)
 	while (i < philo->info->num_of_philo)
 	{
 		if (pthread_create(&philo->info->philos[i].threads, NULL,
-				&routine_Multi_thread, &philo->info->philos[i]) != 0)
+				&routine_multi_thread, &philo->info->philos[i]) != 0)
 		{
 			write_error("Thread creation failed");
 			ft_free(philo);
