@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 22:29:03 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 13:26:10 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 15:24:32 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,13 @@ void					_thinking(t_philo *philo);
 int						one_thread(t_philo *philo);
 void					sleep_philo(int time);
 int						one_thread(t_philo *philo);
+int						state_philos(t_philo *philo);
 void					stop_all_philosophers(t_info *info);
+int						check_philosopher_state(t_philo *philo,
+							t_philo *current_philo);
+int						check_philosopher_meals(t_philo *philo,
+							t_philo *current_philo, int *finished_philosophers);
+int						end_simulation_if_all_finished(t_philo *philo,
+							int finished_philosophers);
 
 #endif

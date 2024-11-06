@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/22 05:49:36 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 14:08:34 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 16:31:40 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int	valide_args(int ac, char **av)
 }
 
 /*
-	* Function to check command-line arguments and initialize philosopher
+ * Function to check command-line arguments and initialize philosopher
 			data based on those arguments.
 */
 int	check_args(t_philo *philo, int ac, char **av)
@@ -110,10 +110,17 @@ int	check_args(t_philo *philo, int ac, char **av)
 	return (0);
 }
 
-/*
-	* Main function: Entry point of the philosopher simulation. Manages 
-	argument checking, memory allocation, and thread creation.
-*/
+/**
+ * The main function of the program.
+ *
+ * This function is the entry point of the program.
+ *  It takes command line arguments
+ * and performs various operations related to the "philo" program.
+ *
+ * ac The number of command line arguments.
+ * av An array of strings representing the command line arguments.
+ *  Returns 0 upon successful execution.
+ */
 int	main(int ac, char **av)
 {
 	t_philo	philo;

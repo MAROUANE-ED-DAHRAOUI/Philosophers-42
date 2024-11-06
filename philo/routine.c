@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 22:29:25 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 14:05:39 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 16:43:25 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,18 @@ int	one_thread(t_philo *philo)
 		usleep(philo->info->t_to_die * 1000);
 		print_moves(philo, "died");
 		pthread_mutex_unlock(philo->left_fork);
-		ft_free(philo); 
+		ft_free(philo);
 		return (0);
 	}
 	return (1);
 }
+
+/**
+ * Function that represents the eating routine of a philosopher.
+
+	* This function is responsible for simulating the eating 
+		behavior of a philosopher.
+ */
 
 void	_eating(t_philo *philo)
 {
@@ -67,6 +74,15 @@ void	_eating(t_philo *philo)
 	pthread_mutex_unlock(philo->right_fork);
 }
 
+/**
+
+	* Function that represents the routine for each philosopher
+		in a multi-threaded simulation.
+ *
+ * arg The argument passed to the thread,
+	which is a pointer to the philosopher structure.
+ * void* Returns NULL when the routine is finished.
+ */
 void	*routine_multi_thread(void *arg)
 {
 	t_philo	*philo;

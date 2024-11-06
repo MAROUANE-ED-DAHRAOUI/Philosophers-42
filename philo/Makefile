@@ -1,4 +1,4 @@
-FILES= main.c utils.c init_mtx.c assistant.c routine.c _helper.c
+FILES= main.c utils.c init_mtx.c assistant.c routine.c _helper.c _helper1.c
 
 OBJ= $(FILES:.c=.o)
 

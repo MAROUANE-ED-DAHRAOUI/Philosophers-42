@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 22:28:55 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 13:26:10 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 16:28:25 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,11 @@ int	write_error(char *str)
 	return (1);
 }
 
+/**
+ * Creates threads for each philosopher.
+ *
+ *  philo The pointer to the t_philo struct.
+ */
 void	create_threads(t_philo *philo)
 {
 	int	i;
@@ -63,6 +68,16 @@ void	create_threads(t_philo *philo)
 	}
 }
 
+/**
+ * Allocates memory for the philosopher's information.
+ * 
+ * This function allocates memory for the forks and philosophers based 
+ * 	on the number of philosophers provided.
+ * 
+ * philo A pointer to the t_philo struct.
+ *   av An array of command-line arguments.
+ *  Returns 1 if memory allocation is successful, 0 otherwise.
+ */
 int	allocate_memory(t_philo *philo, char **av)
 {
 	int	num_philos;
