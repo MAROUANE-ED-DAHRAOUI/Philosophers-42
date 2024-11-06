@@ -6,7 +6,7 @@
 /*   By: med-dahr <med-dahr@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 17:06:29 by med-dahr          #+#    #+#             */
-/*   Updated: 2024/11/06 12:36:31 by med-dahr         ###   ########.fr       */
+/*   Updated: 2024/11/06 13:54:36 by med-dahr         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,59 +61,135 @@ int	state_philos(t_philo *philo)
 	return (1);
 }
 
-int	monitor_state_philo(t_philo *philo)
-{
-	int		i;
-	int		finished_philosophers;
-	t_philo	*current_philo;
+// int	monitor_state_philo(t_philo *philo)
+// {
+// 	int		i;
+// 	int		finished_philosophers;
+// 	t_philo	*current_philo;
 
-	while (1)
-	{
-		finished_philosophers = 0;
-		i = 0;
-		while (i < philo->info->num_of_philo)
-		{
-			current_philo = &philo->info->philos[i];
-			if (state_philos(current_philo) == 0)
-			{
-				pthread_mutex_lock(&(philo->info->stop_lock));
-				philo->info->_exit = false;
-				pthread_mutex_unlock(&(philo->info->stop_lock));
-				pthread_mutex_lock(&(philo->info->prt_lock));
-				printf(RED "%lld %d is dead\n" NC, get_current_time_ms()
-					- philo->t_start, current_philo->id);
-				pthread_mutex_unlock(&(philo->info->prt_lock));
-				ft_free(philo);
-				return (0);
-			}
-			pthread_mutex_lock(&current_philo->lock_meal);
-			if (philo->info->limit_meals != -1
-				&& current_philo->num_meal >= philo->info->limit_meals)
-			{
-				finished_philosophers++;
-			}
-			pthread_mutex_unlock(&current_philo->lock_meal);
-			i += 1;
-		}
-		if (finished_philosophers == philo->info->num_of_philo)
-		{
-			if (is_dead(philo) == 0)
-			{
-				ft_free(philo);
-				return (0);
-			}
-			stop_all_philosophers(philo->info);
-			i = 0;
-			while (i < philo->info->num_of_philo)
-			{
-				pthread_join(philo->info->philos[i].threads, NULL);
-				i++;
-			}
-			return (0);
-		}
-		usleep(500);
-	}
-	return (1);
+// 	while (1)
+// 	{
+// 		finished_philosophers = 0;
+// 		i = 0;
+// 		while (i < philo->info->num_of_philo)
+// 		{
+// 			current_philo = &philo->info->philos[i];
+// 			if (state_philos(current_philo) == 0)
+// 			{
+// 				pthread_mutex_lock(&(philo->info->stop_lock));
+// 				philo->info->_exit = false;
+// 				pthread_mutex_unlock(&(philo->info->stop_lock));
+// 				pthread_mutex_lock(&(philo->info->prt_lock));
+// 				printf(RED "%lld %d is dead\n" NC, get_current_time_ms()
+// 					- philo->t_start, current_philo->id);
+// 				pthread_mutex_unlock(&(philo->info->prt_lock));
+// 				ft_free(philo);
+// 				return (0);
+// 			}
+// 			pthread_mutex_lock(&current_philo->lock_meal);
+// 			if (philo->info->limit_meals != -1
+// 				&& current_philo->num_meal >= philo->info->limit_meals)
+// 			{
+// 				finished_philosophers++;
+// 			}
+// 			pthread_mutex_unlock(&current_philo->lock_meal);
+// 			i += 1;
+// 		}
+// 		if (finished_philosophers == philo->info->num_of_philo)
+// 		{
+// 			if (is_dead(philo) == 0)
+// 			{
+// 				ft_free(philo);
+// 				return (0);
+// 			}
+// 			stop_all_philosophers(philo->info);
+// 			i = 0;
+// 			while (i < philo->info->num_of_philo)
+// 			{
+// 				pthread_join(philo->info->philos[i].threads, NULL);
+// 				i++;
+// 			}
+// 			return (0);
+// 		}
+// 		usleep(500);
+// 	}
+// 	return (1);
+// }
+
+int check_philosopher_state(t_philo *philo, t_philo *current_philo)
+{
+    if (state_philos(current_philo) == 0)
+    {
+        pthread_mutex_lock(&(philo->info->stop_lock));
+        philo->info->_exit = false;
+        pthread_mutex_unlock(&(philo->info->stop_lock));
+
+        pthread_mutex_lock(&(philo->info->prt_lock));
+        printf(RED "%lld %d is dead\n" NC, get_current_time_ms()
+               - philo->t_start, current_philo->id);
+        pthread_mutex_unlock(&(philo->info->prt_lock));
+
+        ft_free(philo);
+        return 0;
+    }
+    return 1;
+}
+
+int check_philosopher_meals(t_philo *philo, t_philo *current_philo, int *finished_philosophers)
+{
+    pthread_mutex_lock(&current_philo->lock_meal);
+    if (philo->info->limit_meals != -1 && current_philo->num_meal >= philo->info->limit_meals)
+    {
+        (*finished_philosophers)++;
+    }
+    pthread_mutex_unlock(&current_philo->lock_meal);
+    return 1;
+}
+
+
+int end_simulation_if_all_finished(t_philo *philo, int finished_philosophers)
+{
+    if (finished_philosophers == philo->info->num_of_philo)
+    {
+        if (is_dead(philo) == 0)
+        {
+            ft_free(philo);
+            return 0;
+        }
+
+        stop_all_philosophers(philo->info);
+        for (int i = 0; i < philo->info->num_of_philo; i++)
+        {
+            pthread_join(philo->info->philos[i].threads, NULL);
+        }
+        return 0;
+    }
+    return 1;
+}
+
+
+int monitor_state_philo(t_philo *philo)
+{
+    int i, finished_philosophers;
+    t_philo *current_philo;
+
+    while (1)
+    {
+        finished_philosophers = 0;
+        i = 0;
+        while (i < philo->info->num_of_philo)
+        {
+            current_philo = &philo->info->philos[i];
+            if (!check_philosopher_state(philo, current_philo) || !check_philosopher_meals(philo, current_philo, &finished_philosophers))
+                return 0;
+            i++;
+        }
+        if (!end_simulation_if_all_finished(philo, finished_philosophers))
+            return 0;
+
+        usleep(500);
+    }
+    return 1;
 }
 
 int	go_threads(t_philo *philo)
